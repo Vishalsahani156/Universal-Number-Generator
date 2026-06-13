@@ -1,0 +1,39 @@
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+
+# Node
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+
+# Data
+data/exports/
+*.csv
+*.xlsx
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Docker
+docker/data/
+
+# OS
+.DS_Store
+Thumbs.db
