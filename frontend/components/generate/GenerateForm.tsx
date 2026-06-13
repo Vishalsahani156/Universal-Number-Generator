@@ -74,7 +74,7 @@ export function GenerateForm() {
 
     try {
       await createJob.mutateAsync({
-        country_code: countryCode,
+        country_code: countryCode!,
         quantity,
         generation_mode: mode,
         export_format: format,
