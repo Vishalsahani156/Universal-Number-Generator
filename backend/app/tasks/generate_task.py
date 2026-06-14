@@ -79,6 +79,8 @@ def run_generate_job(job_id: str) -> None:
         serial = 1
         start_time = datetime.now(timezone.utc)
 
+        progress_interval = max(1, total_chunks // 20)
+
         for chunk_index in range(total_chunks):
             if jobs_repo.is_cancelled_sync(job_id):
                 writer.cleanup()
@@ -92,7 +94,10 @@ def run_generate_job(job_id: str) -> None:
             serial = writer.write_rows(batch, serial)
             generated += len(batch)
 
-            if chunk_index % 5 == 0 or chunk_index == total_chunks - 1:
+            if (
+                chunk_index % progress_interval == 0
+                or chunk_index == total_chunks - 1
+            ):
                 percent = (generated / quantity) * 100
                 elapsed = (datetime.now(timezone.utc) - start_time).total_seconds()
                 eta = None

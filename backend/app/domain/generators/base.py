@@ -1,4 +1,4 @@
-import secrets
+import random
 from typing import Any, Protocol
 
 
@@ -46,12 +46,15 @@ class GenericCountryGenerator:
         return numbers
 
     def _random_batch(self, batch_size: int) -> list[str]:
+        prefixes = self._prefixes
+        length = self._length
         numbers: list[str] = []
+        append = numbers.append
         for _ in range(batch_size):
-            prefix = secrets.choice(self._prefixes)
-            remaining = self._length - len(prefix)
-            suffix = "".join(str(secrets.randbelow(10)) for _ in range(remaining))
-            numbers.append(f"{prefix}{suffix}")
+            prefix = random.choice(prefixes)
+            remaining = length - len(prefix)
+            suffix = f"{random.randrange(10**remaining):0{remaining}d}"
+            append(f"{prefix}{suffix}")
         return numbers
 
     def _has_valid_prefix(self, number: str) -> bool:

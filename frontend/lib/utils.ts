@@ -68,8 +68,7 @@ export function estimateFileSizeBytes(quantity: number, format: "csv" | "xlsx"):
 }
 
 export function estimateDurationSeconds(quantity: number): number {
-  const minutes = quantity / 500_000;
-  return Math.round(minutes * 60);
+  return Math.max(1, Math.round((quantity / 2_000_000) * 60));
 }
 
 export function formatDate(iso: string): string {

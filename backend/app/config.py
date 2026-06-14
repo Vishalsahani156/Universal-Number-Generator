@@ -51,7 +51,7 @@ class Settings(BaseSettings):
                 return DEFAULT_EXPORTS_DIR
 
         return path
-    chunk_size: int = 50_000
+    chunk_size: int = 500_000
 
     min_quantity: int = 1
     max_quantity: int | None = None

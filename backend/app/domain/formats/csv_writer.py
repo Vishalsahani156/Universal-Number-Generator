@@ -2,7 +2,7 @@ import csv
 import hashlib
 import os
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any, Callable, Protocol
 
 
 class FileWriter(Protocol):
@@ -19,13 +19,18 @@ class CsvWriter:
         final_path: Path,
         column_name: str,
         include_serial: bool,
-        formatter,
+        formatter: Callable[[str], str],
     ) -> None:
         self._temp_path = temp_path
         self._final_path = final_path
         self._formatter = formatter
         self._include_serial = include_serial
-        self._file = temp_path.open("w", newline="", encoding="utf-8")
+        self._file = temp_path.open(
+            "w",
+            newline="",
+            encoding="utf-8",
+            buffering=1024 * 1024,
+        )
         self._writer = csv.writer(self._file)
         header = []
         if include_serial:
@@ -35,15 +40,22 @@ class CsvWriter:
         self._serial = 1
 
     def write_rows(self, rows: list[str], start_serial: int) -> int:
+        if not rows:
+            return start_serial
+
         self._serial = start_serial
-        for number in rows:
-            row = []
-            if self._include_serial:
-                row.append(self._serial)
-                self._serial += 1
-            row.append(self._formatter(number))
-            self._writer.writerow(row)
-        self._file.flush()
+        formatted = [self._formatter(number) for number in rows]
+
+        if self._include_serial:
+            data = [
+                [start_serial + index, value]
+                for index, value in enumerate(formatted)
+            ]
+            self._serial = start_serial + len(rows)
+            self._writer.writerows(data)
+        else:
+            self._writer.writerows([[value] for value in formatted])
+
         return self._serial
 
     def finalize(self) -> dict[str, Any]:

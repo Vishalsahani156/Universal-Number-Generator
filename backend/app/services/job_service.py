@@ -122,7 +122,8 @@ class JobService:
         )
 
     def estimate_duration(self, quantity: int) -> int:
-        return max(1, int((quantity / 500_000) * 60))
+        # ~2M numbers/minute after bulk-write optimizations
+        return max(1, int((quantity / 2_000_000) * 60))
 
     def _to_create_response(self, job: dict[str, Any]) -> JobCreateResponse:
         settings = get_settings()
