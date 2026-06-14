@@ -10,7 +10,7 @@ import type {
 } from "@/types/api";
 import { getSessionId } from "./session";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "/api/v1";
 
 export class ApiClientError extends Error {
   status: number;

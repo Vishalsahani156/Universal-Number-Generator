@@ -28,14 +28,20 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=settings.cors_origin_list,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-        expose_headers=["Retry-After", "Content-Disposition"],
-    )
+    cors_kwargs: dict = {
+        "allow_origins": settings.cors_origin_list,
+        "allow_credentials": True,
+        "allow_methods": ["*"],
+        "allow_headers": ["*"],
+        "expose_headers": ["Retry-After", "Content-Disposition"],
+    }
+    # ngrok URLs change each session; allow them in local dev without editing .env
+    if settings.app_env == "development":
+        cors_kwargs["allow_origin_regex"] = (
+            r"https://.*\.ngrok-free\.(app|dev)|https://.*\.ngrok\.io"
+        )
+
+    app.add_middleware(CORSMiddleware, **cors_kwargs)
 
     prefix = settings.api_prefix
     app.include_router(health.router, prefix=prefix)
