@@ -1,0 +1,59 @@
+from contextlib import asynccontextmanager
+
+import orjson
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import ORJSONResponse
+
+from app.config import get_settings
+from app.database import connect_mongodb, disconnect_mongodb
+from app.dependencies.rate_limit import close_redis
+from app.routers import countries, health, jobs
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    settings = get_settings()
+    settings.exports_dir.mkdir(parents=True, exist_ok=True)
+    await connect_mongodb()
+    yield
+    await disconnect_mongodb()
+    await close_redis()
+
+
+def create_app() -> FastAPI:
+    settings = get_settings()
+    app = FastAPI(
+        title="Phone Number Generator API",
+        version="1.0.0",
+        lifespan=lifespan,
+        default_response_class=ORJSONResponse,
+    )
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_origin_list,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+        expose_headers=["Retry-After", "Content-Disposition"],
+    )
+
+    prefix = settings.api_prefix
+    app.include_router(health.router, prefix=prefix)
+    app.include_router(countries.router, prefix=prefix)
+    app.include_router(jobs.router, prefix=prefix)
+
+    @app.exception_handler(HTTPException)
+    async def http_exception_handler(_request: Request, exc: HTTPException):
+        headers = getattr(exc, "headers", None) or {}
+        return ORJSONResponse(
+            status_code=exc.status_code,
+            content={"detail": exc.detail},
+            headers=headers,
+        )
+
+    return app
+
+
+app = create_app()

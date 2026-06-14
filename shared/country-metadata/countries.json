@@ -1,0 +1,452 @@
+[
+  {
+    "_id": "IN",
+    "name": "India",
+    "dial_code": "+91",
+    "iso_alpha2": "IN",
+    "mobile_rules": {
+      "length": 10,
+      "valid_prefixes": ["6", "7", "8", "9"],
+      "sequential_start": 6000000000,
+      "sequential_end": 9999999999
+    },
+    "default_export": { "column_name": "phone", "include_country_code": false, "include_serial": false },
+    "display_order": 1,
+    "enabled": true
+  },
+  {
+    "_id": "AE",
+    "name": "UAE",
+    "dial_code": "+971",
+    "iso_alpha2": "AE",
+    "mobile_rules": {
+      "length": 9,
+      "valid_prefixes": ["50", "52", "54", "55", "56", "58"],
+      "sequential_start": 500000000,
+      "sequential_end": 589999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 2,
+    "enabled": true
+  },
+  {
+    "_id": "US",
+    "name": "USA",
+    "dial_code": "+1",
+    "iso_alpha2": "US",
+    "mobile_rules": {
+      "length": 10,
+      "valid_prefixes": ["201", "202", "212", "310", "312", "415", "512", "617", "702", "713", "818", "917"],
+      "sequential_start": 2010000000,
+      "sequential_end": 9899999999
+    },
+    "default_export": { "column_name": "phone", "include_country_code": false, "include_serial": false },
+    "display_order": 3,
+    "enabled": true
+  },
+  {
+    "_id": "GB",
+    "name": "UK",
+    "dial_code": "+44",
+    "iso_alpha2": "GB",
+    "mobile_rules": {
+      "length": 10,
+      "valid_prefixes": ["71", "72", "73", "74", "75", "77", "78", "79"],
+      "sequential_start": 7100000000,
+      "sequential_end": 7999999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 4,
+    "enabled": true
+  },
+  {
+    "_id": "CA",
+    "name": "Canada",
+    "dial_code": "+1",
+    "iso_alpha2": "CA",
+    "mobile_rules": {
+      "length": 10,
+      "valid_prefixes": ["204", "226", "289", "306", "403", "416", "418", "514", "604", "613", "647", "705"],
+      "sequential_start": 2040000000,
+      "sequential_end": 9999999999
+    },
+    "default_export": { "column_name": "phone", "include_country_code": false, "include_serial": false },
+    "display_order": 5,
+    "enabled": true
+  },
+  {
+    "_id": "AU",
+    "name": "Australia",
+    "dial_code": "+61",
+    "iso_alpha2": "AU",
+    "mobile_rules": {
+      "length": 9,
+      "valid_prefixes": ["4"],
+      "sequential_start": 400000000,
+      "sequential_end": 499999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 6,
+    "enabled": true
+  },
+  {
+    "_id": "DE",
+    "name": "Germany",
+    "dial_code": "+49",
+    "iso_alpha2": "DE",
+    "mobile_rules": {
+      "length": 11,
+      "valid_prefixes": ["151", "152", "157", "159", "160", "162", "163", "170", "171", "172", "173", "174", "175", "176", "177", "178", "179"],
+      "sequential_start": 15100000000,
+      "sequential_end": 17999999999
+    },
+    "default_export": { "column_name": "phone", "include_country_code": false, "include_serial": false },
+    "display_order": 7,
+    "enabled": true
+  },
+  {
+    "_id": "FR",
+    "name": "France",
+    "dial_code": "+33",
+    "iso_alpha2": "FR",
+    "mobile_rules": {
+      "length": 9,
+      "valid_prefixes": ["6", "7"],
+      "sequential_start": 600000000,
+      "sequential_end": 799999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 8,
+    "enabled": true
+  },
+  {
+    "_id": "IT",
+    "name": "Italy",
+    "dial_code": "+39",
+    "iso_alpha2": "IT",
+    "mobile_rules": {
+      "length": 10,
+      "valid_prefixes": ["30", "31", "32", "33", "34", "35", "36", "37", "38", "39"],
+      "sequential_start": 3000000000,
+      "sequential_end": 3999999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 9,
+    "enabled": true
+  },
+  {
+    "_id": "ES",
+    "name": "Spain",
+    "dial_code": "+34",
+    "iso_alpha2": "ES",
+    "mobile_rules": {
+      "length": 9,
+      "valid_prefixes": ["6", "7"],
+      "sequential_start": 600000000,
+      "sequential_end": 799999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 10,
+    "enabled": true
+  },
+  {
+    "_id": "NL",
+    "name": "Netherlands",
+    "dial_code": "+31",
+    "iso_alpha2": "NL",
+    "mobile_rules": {
+      "length": 9,
+      "valid_prefixes": ["6"],
+      "sequential_start": 600000000,
+      "sequential_end": 699999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 11,
+    "enabled": true
+  },
+  {
+    "_id": "SG",
+    "name": "Singapore",
+    "dial_code": "+65",
+    "iso_alpha2": "SG",
+    "mobile_rules": {
+      "length": 8,
+      "valid_prefixes": ["8", "9"],
+      "sequential_start": 80000000,
+      "sequential_end": 99999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 12,
+    "enabled": true
+  },
+  {
+    "_id": "MY",
+    "name": "Malaysia",
+    "dial_code": "+60",
+    "iso_alpha2": "MY",
+    "mobile_rules": {
+      "length": 10,
+      "valid_prefixes": ["10", "11", "12", "13", "14", "15", "16", "17", "18", "19"],
+      "sequential_start": 1000000000,
+      "sequential_end": 1999999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 13,
+    "enabled": true
+  },
+  {
+    "_id": "SA",
+    "name": "Saudi Arabia",
+    "dial_code": "+966",
+    "iso_alpha2": "SA",
+    "mobile_rules": {
+      "length": 9,
+      "valid_prefixes": ["5"],
+      "sequential_start": 500000000,
+      "sequential_end": 599999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 14,
+    "enabled": true
+  },
+  {
+    "_id": "QA",
+    "name": "Qatar",
+    "dial_code": "+974",
+    "iso_alpha2": "QA",
+    "mobile_rules": {
+      "length": 8,
+      "valid_prefixes": ["3", "5", "6", "7"],
+      "sequential_start": 30000000,
+      "sequential_end": 79999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 15,
+    "enabled": true
+  },
+  {
+    "_id": "KW",
+    "name": "Kuwait",
+    "dial_code": "+965",
+    "iso_alpha2": "KW",
+    "mobile_rules": {
+      "length": 8,
+      "valid_prefixes": ["5", "6", "9"],
+      "sequential_start": 50000000,
+      "sequential_end": 99999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 16,
+    "enabled": true
+  },
+  {
+    "_id": "OM",
+    "name": "Oman",
+    "dial_code": "+968",
+    "iso_alpha2": "OM",
+    "mobile_rules": {
+      "length": 8,
+      "valid_prefixes": ["7", "9"],
+      "sequential_start": 70000000,
+      "sequential_end": 99999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 17,
+    "enabled": true
+  },
+  {
+    "_id": "BH",
+    "name": "Bahrain",
+    "dial_code": "+973",
+    "iso_alpha2": "BH",
+    "mobile_rules": {
+      "length": 8,
+      "valid_prefixes": ["3"],
+      "sequential_start": 30000000,
+      "sequential_end": 39999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 18,
+    "enabled": true
+  },
+  {
+    "_id": "PK",
+    "name": "Pakistan",
+    "dial_code": "+92",
+    "iso_alpha2": "PK",
+    "mobile_rules": {
+      "length": 10,
+      "valid_prefixes": ["3"],
+      "sequential_start": 3000000000,
+      "sequential_end": 3999999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 19,
+    "enabled": true
+  },
+  {
+    "_id": "BD",
+    "name": "Bangladesh",
+    "dial_code": "+880",
+    "iso_alpha2": "BD",
+    "mobile_rules": {
+      "length": 10,
+      "valid_prefixes": ["1"],
+      "sequential_start": 1300000000,
+      "sequential_end": 1999999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 20,
+    "enabled": true
+  },
+  {
+    "_id": "NP",
+    "name": "Nepal",
+    "dial_code": "+977",
+    "iso_alpha2": "NP",
+    "mobile_rules": {
+      "length": 10,
+      "valid_prefixes": ["97", "98"],
+      "sequential_start": 9700000000,
+      "sequential_end": 9899999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 21,
+    "enabled": true
+  },
+  {
+    "_id": "LK",
+    "name": "Sri Lanka",
+    "dial_code": "+94",
+    "iso_alpha2": "LK",
+    "mobile_rules": {
+      "length": 9,
+      "valid_prefixes": ["7"],
+      "sequential_start": 700000000,
+      "sequential_end": 799999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 22,
+    "enabled": true
+  },
+  {
+    "_id": "ZA",
+    "name": "South Africa",
+    "dial_code": "+27",
+    "iso_alpha2": "ZA",
+    "mobile_rules": {
+      "length": 9,
+      "valid_prefixes": ["6", "7", "8"],
+      "sequential_start": 600000000,
+      "sequential_end": 899999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 23,
+    "enabled": true
+  },
+  {
+    "_id": "BR",
+    "name": "Brazil",
+    "dial_code": "+55",
+    "iso_alpha2": "BR",
+    "mobile_rules": {
+      "length": 11,
+      "valid_prefixes": ["119", "219", "319", "419", "519", "619", "719", "819", "919"],
+      "sequential_start": 11900000000,
+      "sequential_end": 99999999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 24,
+    "enabled": true
+  },
+  {
+    "_id": "MX",
+    "name": "Mexico",
+    "dial_code": "+52",
+    "iso_alpha2": "MX",
+    "mobile_rules": {
+      "length": 10,
+      "valid_prefixes": ["55", "33", "81", "222", "442", "477", "614", "662", "667", "686", "744", "777", "833", "899", "998"],
+      "sequential_start": 5500000000,
+      "sequential_end": 9999999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 25,
+    "enabled": true
+  },
+  {
+    "_id": "TR",
+    "name": "Turkey",
+    "dial_code": "+90",
+    "iso_alpha2": "TR",
+    "mobile_rules": {
+      "length": 10,
+      "valid_prefixes": ["5"],
+      "sequential_start": 5000000000,
+      "sequential_end": 5999999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 26,
+    "enabled": true
+  },
+  {
+    "_id": "ID",
+    "name": "Indonesia",
+    "dial_code": "+62",
+    "iso_alpha2": "ID",
+    "mobile_rules": {
+      "length": 11,
+      "valid_prefixes": ["811", "812", "813", "814", "815", "816", "817", "818", "819", "821", "822", "823", "851", "852", "853", "855", "856", "857", "858", "859", "877", "878", "879", "881", "882", "883", "884", "885", "886", "887", "888", "889", "895", "896", "897", "898", "899"],
+      "sequential_start": 81100000000,
+      "sequential_end": 89999999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 27,
+    "enabled": true
+  },
+  {
+    "_id": "TH",
+    "name": "Thailand",
+    "dial_code": "+66",
+    "iso_alpha2": "TH",
+    "mobile_rules": {
+      "length": 9,
+      "valid_prefixes": ["6", "8", "9"],
+      "sequential_start": 600000000,
+      "sequential_end": 999999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 28,
+    "enabled": true
+  },
+  {
+    "_id": "PH",
+    "name": "Philippines",
+    "dial_code": "+63",
+    "iso_alpha2": "PH",
+    "mobile_rules": {
+      "length": 10,
+      "valid_prefixes": ["9"],
+      "sequential_start": 9000000000,
+      "sequential_end": 9999999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 29,
+    "enabled": true
+  },
+  {
+    "_id": "JP",
+    "name": "Japan",
+    "dial_code": "+81",
+    "iso_alpha2": "JP",
+    "mobile_rules": {
+      "length": 10,
+      "valid_prefixes": ["70", "80", "90"],
+      "sequential_start": 7000000000,
+      "sequential_end": 9999999999
+    },
+    "default_export": { "column_name": "mobile", "include_country_code": false, "include_serial": false },
+    "display_order": 30,
+    "enabled": true
+  }
+]
