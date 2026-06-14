@@ -3,8 +3,8 @@
 import { useCountries } from "@/hooks/useCountries";
 import { useGenerateStore } from "@/stores/generate-store";
 import { Input } from "@/components/ui/Input";
-import { XLSX_MAX_ROWS } from "@/lib/constants";
-import { formatNumber } from "@/lib/utils";
+import { DEFAULT_COLUMN_NAME, XLSX_MAX_ROWS } from "@/lib/constants";
+import { formatNumber, resolveColumnName } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import type { ExportFormat } from "@/types/api";
 
@@ -33,10 +33,24 @@ export function ExportOptionsPanel() {
     <div className="space-y-4">
       <Input
         label="Column header name"
+        placeholder={DEFAULT_COLUMN_NAME}
         value={columnName}
         onChange={(e) => setColumnName(e.target.value)}
-        hint="Letters, numbers, spaces, underscores (max 50 chars)"
+        hint={`Leave empty for default "${DEFAULT_COLUMN_NAME}", or type your own (max 50 chars)`}
       />
+
+      {!columnName.trim() && (
+        <p className="text-xs text-slate-500">
+          CSV header will be: <span className="font-medium">{DEFAULT_COLUMN_NAME}</span>
+        </p>
+      )}
+
+      {columnName.trim() && (
+        <p className="text-xs text-slate-500">
+          CSV header will be:{" "}
+          <span className="font-medium">{resolveColumnName(columnName)}</span>
+        </p>
+      )}
 
       <div className="space-y-3">
         <label

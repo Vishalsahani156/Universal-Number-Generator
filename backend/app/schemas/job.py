@@ -16,6 +16,15 @@ class ExportOptions(BaseModel):
     include_country_code: bool = False
     include_serial: bool = False
 
+    @field_validator("column_name", mode="before")
+    @classmethod
+    def default_column_name(cls, value: str) -> str:
+        if isinstance(value, str):
+            value = value.strip()
+        if not value:
+            return "number"
+        return value
+
     @field_validator("column_name")
     @classmethod
     def validate_column_name(cls, value: str) -> str:

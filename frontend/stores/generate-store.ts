@@ -28,7 +28,7 @@ const initialState = {
   countryCode: null as string | null,
   quantity: 1,
   mode: "random" as GenerationMode,
-  columnName: "mobile_number",
+  columnName: "",
   includeCountryCode: false,
   includeSerial: true,
   format: "csv" as ExportFormat,
@@ -45,7 +45,6 @@ export const useGenerateStore = create<GenerateState>((set) => ({
   setFormat: (format) => set({ format }),
   applyCountryDefaults: (defaults) =>
     set({
-      columnName: defaults.column_name,
       includeCountryCode: defaults.include_country_code,
       includeSerial: defaults.include_serial,
     }),

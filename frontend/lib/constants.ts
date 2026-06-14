@@ -12,3 +12,4 @@ export const TERMINAL_STATUSES = [
 ] as const;
 
 export const COLUMN_NAME_REGEX = /^[a-zA-Z0-9_ ]{1,50}$/;
+export const DEFAULT_COLUMN_NAME = "number";

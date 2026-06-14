@@ -1,5 +1,12 @@
 import { clsx, type ClassValue } from "clsx";
 
+import { DEFAULT_COLUMN_NAME } from "@/lib/constants";
+
+export function resolveColumnName(name: string): string {
+  const trimmed = name.trim();
+  return trimmed || DEFAULT_COLUMN_NAME;
+}
+
 export function cn(...inputs: ClassValue[]) {
   return clsx(inputs);
 }

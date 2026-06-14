@@ -22,6 +22,7 @@ import {
   formatDuration,
   formatFileSize,
   formatNumber,
+  resolveColumnName,
 } from "@/lib/utils";
 import { ApiClientError } from "@/lib/api-client";
 
@@ -53,7 +54,8 @@ export function GenerateForm() {
     if (quantity < MIN_QUANTITY) {
       return `Quantity must be at least ${formatNumber(MIN_QUANTITY)}`;
     }
-    if (!COLUMN_NAME_REGEX.test(columnName.trim())) {
+    const resolvedColumnName = resolveColumnName(columnName);
+    if (!COLUMN_NAME_REGEX.test(resolvedColumnName)) {
       return "Column name must be 1–50 chars (letters, numbers, spaces, underscores)";
     }
     if (format === "xlsx" && quantity > XLSX_MAX_ROWS) {
@@ -83,7 +85,7 @@ export function GenerateForm() {
         generation_mode: mode,
         export_format: format,
         export_options: {
-          column_name: columnName.trim(),
+          column_name: resolveColumnName(columnName),
           include_country_code: includeCountryCode,
           include_serial: includeSerial,
         },
