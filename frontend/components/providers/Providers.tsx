@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect, useState, type ReactNode } from "react";
 import { ensureSessionId } from "@/lib/session";
 import { ToastProvider } from "./ToastProvider";
+import { ThemeProvider } from "./ThemeProvider";
 import { ToastContainer } from "@/components/ui/Toast";
 
 export function Providers({ children }: { children: ReactNode }) {
@@ -25,10 +26,12 @@ export function Providers({ children }: { children: ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ToastProvider>
-        {children}
-        <ToastContainer />
-      </ToastProvider>
+      <ThemeProvider>
+        <ToastProvider>
+          {children}
+          <ToastContainer />
+        </ToastProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

@@ -63,7 +63,7 @@ export default function JobDetailPage() {
   if (error || !job) {
     return (
       <Card>
-        <p className="text-sm text-red-600">
+        <p className="text-sm text-red-600 dark:text-red-400">
           {error instanceof ApiClientError
             ? error.message
             : "Job not found or failed to load."}
@@ -77,10 +77,10 @@ export default function JobDetailPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Job details</h1>
-          <p className="mt-1 font-mono text-xs text-slate-500">{job.job_id}</p>
+          <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 night:text-slate-200 sm:text-2xl">Job details</h1>
+          <p className="mt-1 break-all font-mono text-xs text-slate-500 dark:text-slate-400 night:text-slate-500">{job.job_id}</p>
         </div>
         {isActive && (
           <Button

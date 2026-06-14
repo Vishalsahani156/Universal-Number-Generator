@@ -35,7 +35,7 @@ export function DownloadButtons({
 
   if (!downloadReady) {
     return (
-      <p className="text-sm text-slate-500">
+      <p className="text-sm text-slate-500 dark:text-slate-400 night:text-slate-500">
         Download will be available when the job completes.
       </p>
     );

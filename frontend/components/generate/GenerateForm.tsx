@@ -116,14 +116,14 @@ export function GenerateForm() {
         </Card>
 
         <Card title="Estimates">
-          <dl className="grid grid-cols-2 gap-4 text-sm">
+          <dl className="grid grid-cols-1 gap-4 text-sm xs:grid-cols-2">
             <div>
-              <dt className="text-slate-500">File size</dt>
-              <dd className="font-medium text-slate-900">~{formatFileSize(estSize)}</dd>
+              <dt className="text-slate-500 dark:text-slate-400 night:text-slate-500">File size</dt>
+              <dd className="font-medium text-slate-900 dark:text-slate-100 night:text-slate-200">~{formatFileSize(estSize)}</dd>
             </div>
             <div>
-              <dt className="text-slate-500">Est. duration</dt>
-              <dd className="font-medium text-slate-900">~{formatDuration(estDuration)}</dd>
+              <dt className="text-slate-500 dark:text-slate-400 night:text-slate-500">Est. duration</dt>
+              <dd className="font-medium text-slate-900 dark:text-slate-100 night:text-slate-200">~{formatDuration(estDuration)}</dd>
             </div>
           </dl>
         </Card>

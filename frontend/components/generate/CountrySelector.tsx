@@ -42,7 +42,7 @@ export function CountrySelector() {
 
   if (error) {
     return (
-      <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+      <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950/40 dark:text-red-300 night:border-red-900 night:bg-red-950/30 night:text-red-400">
         Failed to load countries. Make sure the backend is running.
       </p>
     );
@@ -50,7 +50,7 @@ export function CountrySelector() {
 
   if (!countries?.length) {
     return (
-      <p className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+      <p className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-300 night:border-amber-900 night:bg-amber-950/30 night:text-amber-400">
         No countries loaded. Seed the database:{" "}
         <code className="text-xs">PYTHONPATH=backend python backend/scripts/seed_countries.py</code>
       </p>
@@ -70,7 +70,7 @@ export function CountrySelector() {
       />
 
       {query && filtered.length > 0 && (
-        <div className="grid max-h-80 grid-cols-1 gap-2 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50/50 p-2 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid max-h-80 grid-cols-1 gap-2 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50/50 p-2 dark:border-slate-700 dark:bg-slate-900/50 night:border-slate-800 night:bg-slate-950/50 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((country) => (
             <button
               key={country.code}
@@ -79,18 +79,18 @@ export function CountrySelector() {
               className={cn(
                 "flex items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors",
                 countryCode === country.code
-                  ? "border-brand-500 bg-brand-50 ring-2 ring-brand-500/20"
-                  : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50",
+                  ? "border-brand-500 bg-brand-50 ring-2 ring-brand-500/20 dark:bg-brand-950/40 dark:ring-brand-500/30 night:bg-brand-950/30 night:ring-brand-500/20"
+                  : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:hover:border-slate-500 dark:hover:bg-slate-700 night:border-slate-700 night:bg-slate-900 night:hover:border-slate-600 night:hover:bg-slate-800",
               )}
             >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-600">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-600 dark:bg-slate-700 dark:text-slate-300 night:bg-slate-800 night:text-slate-400">
                 {country.iso_alpha2}
               </span>
               <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-slate-900">
+                <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-100 night:text-slate-200">
                   {country.name}
                 </p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-500 dark:text-slate-400 night:text-slate-500">
                   {country.dial_code} · {country.mobile_rules.length} digits
                 </p>
               </div>
@@ -100,11 +100,11 @@ export function CountrySelector() {
       )}
 
       {query && filtered.length === 0 && (
-        <p className="text-center text-sm text-slate-500">No countries match your search.</p>
+        <p className="text-center text-sm text-slate-500 dark:text-slate-400 night:text-slate-500">No countries match your search.</p>
       )}
 
       {selectedCountry && (
-        <p className="rounded-lg bg-brand-50 px-4 py-2 text-sm text-brand-800">
+        <p className="rounded-lg bg-brand-50 px-4 py-2 text-sm text-brand-800 dark:bg-brand-950/40 dark:text-brand-300 night:bg-brand-950/30 night:text-brand-400">
           Selected:{" "}
           <span className="font-medium">{selectedCountry.name}</span> (
           {selectedCountry.dial_code}) — numbers will be generated for this country.

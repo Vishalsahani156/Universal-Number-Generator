@@ -16,8 +16,8 @@ export default function HistoryPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Job history</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 night:text-slate-200 sm:text-2xl">Job history</h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 night:text-slate-500">
           All jobs for your current session (last 30 days).
         </p>
       </div>
@@ -29,7 +29,7 @@ export default function HistoryPage() {
       )}
 
       {error && (
-        <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950/40 dark:text-red-300 night:border-red-900 night:bg-red-950/30 night:text-red-400">
           Failed to load history. Make sure the backend is running.
         </p>
       )}
@@ -48,7 +48,7 @@ export default function HistoryPage() {
               >
                 Previous
               </Button>
-              <span className="text-sm text-slate-500">
+              <span className="text-sm text-slate-500 dark:text-slate-400 night:text-slate-500">
                 Page {page + 1} of {totalPages}
               </span>
               <Button

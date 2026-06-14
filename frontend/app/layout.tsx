@@ -21,7 +21,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('png-theme');if(t==='dark'||t==='night'||t==='light'){document.documentElement.classList.add(t);document.documentElement.style.colorScheme=t==='light'?'light':'dark';}}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className={`${inter.variable} font-sans`}>
         <Providers>
           <AppLayout>{children}</AppLayout>

@@ -40,13 +40,13 @@ export function ExportOptionsPanel() {
       />
 
       {!columnName.trim() && (
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-slate-500 dark:text-slate-400 night:text-slate-500">
           CSV header will be: <span className="font-medium">{DEFAULT_COLUMN_NAME}</span>
         </p>
       )}
 
       {columnName.trim() && (
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-slate-500 dark:text-slate-400 night:text-slate-500">
           CSV header will be:{" "}
           <span className="font-medium">{resolveColumnName(columnName)}</span>
         </p>
@@ -64,13 +64,13 @@ export function ExportOptionsPanel() {
             checked={includeCountryCode}
             disabled={!selectedCountry}
             onChange={(e) => setIncludeCountryCode(e.target.checked)}
-            className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500 disabled:cursor-not-allowed"
+            className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500 disabled:cursor-not-allowed dark:border-slate-600 dark:bg-slate-800 night:border-slate-700 night:bg-slate-900"
           />
-          <span className="text-sm text-slate-700">
+          <span className="text-sm text-slate-700 dark:text-slate-300 night:text-slate-400">
             {selectedCountry ? (
               <>
                 Include{" "}
-                <span className="font-medium text-slate-900">{selectedCountry.name}</span> dial
+                <span className="font-medium text-slate-900 dark:text-slate-100 night:text-slate-200">{selectedCountry.name}</span> dial
                 code ({dialCode})
               </>
             ) : (
@@ -80,7 +80,7 @@ export function ExportOptionsPanel() {
         </label>
 
         {includeCountryCode && dialCode && (
-          <p className="ml-7 text-xs text-brand-700">
+          <p className="ml-7 text-xs text-brand-700 dark:text-brand-400 night:text-brand-500">
             Numbers will be generated as {dialCode}
             {sampleDigits.slice(0, 4)}… (e.g. {dialCode}
             {sampleDigits})
@@ -88,7 +88,7 @@ export function ExportOptionsPanel() {
         )}
 
         {!includeCountryCode && selectedCountry && (
-          <p className="ml-7 text-xs text-slate-500">
+          <p className="ml-7 text-xs text-slate-500 dark:text-slate-400 night:text-slate-500">
             Unchecked: local number only (e.g. {sampleDigits})
           </p>
         )}
@@ -98,14 +98,14 @@ export function ExportOptionsPanel() {
             type="checkbox"
             checked={includeSerial}
             onChange={(e) => setIncludeSerial(e.target.checked)}
-            className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+            className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-800 night:border-slate-700 night:bg-slate-900"
           />
-          <span className="text-sm text-slate-700">Include S.No column</span>
+          <span className="text-sm text-slate-700 dark:text-slate-300 night:text-slate-400">Include S.No column</span>
         </label>
       </div>
 
       <div className="space-y-2">
-        <p className="text-sm font-medium text-slate-700">Export format</p>
+        <p className="text-sm font-medium text-slate-700 dark:text-slate-300 night:text-slate-400">Export format</p>
         <div className="grid grid-cols-2 gap-2">
           {(["csv", "xlsx"] as ExportFormat[]).map((f) => {
             const disabled = f === "xlsx" && xlsxDisabled;
@@ -123,8 +123,8 @@ export function ExportOptionsPanel() {
                 className={cn(
                   "rounded-lg border px-4 py-3 text-sm font-medium uppercase transition-colors",
                   format === f
-                    ? "border-brand-500 bg-brand-50 text-brand-700 ring-2 ring-brand-500/20"
-                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+                    ? "border-brand-500 bg-brand-50 text-brand-700 ring-2 ring-brand-500/20 dark:bg-brand-950/40 dark:text-brand-300 dark:ring-brand-500/30 night:bg-brand-950/30 night:text-brand-400 night:ring-brand-500/20"
+                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 night:border-slate-700 night:bg-slate-900 night:text-slate-400 night:hover:bg-slate-800",
                   disabled && "cursor-not-allowed opacity-50",
                 )}
               >
@@ -134,7 +134,7 @@ export function ExportOptionsPanel() {
           })}
         </div>
         {xlsxDisabled && (
-          <p className="text-xs text-amber-600">
+          <p className="text-xs text-amber-600 dark:text-amber-400 night:text-amber-500">
             XLSX disabled — quantity exceeds {formatNumber(XLSX_MAX_ROWS)} row limit. Use CSV instead.
           </p>
         )}
