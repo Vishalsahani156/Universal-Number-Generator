@@ -28,7 +28,7 @@ class ExportOptions(BaseModel):
 
 class JobCreateRequest(BaseModel):
     country_code: str = Field(..., min_length=2, max_length=2)
-    quantity: int
+    quantity: int = Field(..., ge=1)
     generation_mode: GenerationMode
     export_format: ExportFormat
     export_options: ExportOptions

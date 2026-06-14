@@ -48,7 +48,10 @@ class JobService:
             raise ValueError(
                 f"Quantity must be at least {self._settings.min_quantity:,}"
             )
-        if request.quantity > self._settings.max_quantity:
+        if (
+            self._settings.max_quantity is not None
+            and request.quantity > self._settings.max_quantity
+        ):
             raise ValueError(
                 f"Quantity must be at most {self._settings.max_quantity:,}"
             )

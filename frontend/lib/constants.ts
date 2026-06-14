@@ -1,5 +1,4 @@
 export const MIN_QUANTITY = 1;
-export const MAX_QUANTITY = 10_000_000; // 1 crore
 export const XLSX_MAX_ROWS = 1_048_576;
 export const LARGE_JOB_THRESHOLD = 100_000;
 export const POLL_INTERVAL_MS = 2000;

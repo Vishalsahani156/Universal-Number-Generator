@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useGenerateStore } from "@/stores/generate-store";
 import { Input } from "@/components/ui/Input";
-import { MAX_QUANTITY, MIN_QUANTITY } from "@/lib/constants";
-import { formatCompact, formatNumber, parseQuantityInput } from "@/lib/utils";
+import { MIN_QUANTITY } from "@/lib/constants";
+import { formatNumber, parseQuantityInput } from "@/lib/utils";
 
 export function QuantityInput() {
   const { quantity, setQuantity } = useGenerateStore();
@@ -29,11 +29,6 @@ export function QuantityInput() {
       setQuantity(num);
       return;
     }
-    if (num > MAX_QUANTITY) {
-      setError(`Maximum is ${formatCompact(MAX_QUANTITY)} (${formatNumber(MAX_QUANTITY)})`);
-      setQuantity(num);
-      return;
-    }
     setError("");
     setQuantity(num);
     setDisplayValue(formatNumber(num));
@@ -48,7 +43,7 @@ export function QuantityInput() {
       value={displayValue}
       onChange={(e) => handleChange(e.target.value)}
       error={error}
-      hint={`${formatNumber(MIN_QUANTITY)} to ${formatCompact(MAX_QUANTITY)} numbers for selected country`}
+      hint={`Minimum ${formatNumber(MIN_QUANTITY)} — no maximum limit`}
     />
   );
 }

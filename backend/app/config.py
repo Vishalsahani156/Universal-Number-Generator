@@ -54,7 +54,7 @@ class Settings(BaseSettings):
     chunk_size: int = 50_000
 
     min_quantity: int = 1
-    max_quantity: int = 10_000_000
+    max_quantity: int | None = None
     xlsx_max_rows: int = 1_048_576
 
     rate_limit_jobs_per_hour_ip: int = 3
