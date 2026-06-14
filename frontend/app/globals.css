@@ -9,6 +9,15 @@
   }
 
   body {
-    @apply bg-slate-50 text-slate-900 transition-colors duration-200 dark:bg-slate-900 dark:text-slate-100 night:bg-[#070b14] night:text-slate-200;
+    @apply bg-slate-50 text-slate-900 transition-colors duration-200;
+  }
+
+  html.dark body {
+    @apply bg-slate-900 text-slate-100;
+  }
+
+  html.night body {
+    background-color: #070b14;
+    @apply text-slate-200;
   }
 }

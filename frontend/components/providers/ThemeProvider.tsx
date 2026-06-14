@@ -4,7 +4,7 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
+  useLayoutEffect,
   useState,
   type ReactNode,
 } from "react";
@@ -12,11 +12,11 @@ import {
 export type Theme = "light" | "dark" | "night";
 
 const STORAGE_KEY = "png-theme";
+const THEMES: Theme[] = ["light", "dark", "night"];
 
 interface ThemeContextValue {
   theme: Theme;
   setTheme: (theme: Theme) => void;
-  cycleTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
@@ -26,6 +26,11 @@ function applyTheme(theme: Theme) {
   root.classList.remove("light", "dark", "night");
   root.classList.add(theme);
   root.style.colorScheme = theme === "light" ? "light" : "dark";
+}
+
+function readThemeFromDom(): Theme | null {
+  if (typeof document === "undefined") return null;
+  return THEMES.find((t) => document.documentElement.classList.contains(t)) ?? null;
 }
 
 function readStoredTheme(): Theme {
@@ -40,10 +45,10 @@ function readStoredTheme(): Theme {
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("light");
 
-  useEffect(() => {
-    const stored = readStoredTheme();
-    setThemeState(stored);
-    applyTheme(stored);
+  useLayoutEffect(() => {
+    const initial = readThemeFromDom() ?? readStoredTheme();
+    setThemeState(initial);
+    applyTheme(initial);
   }, []);
 
   const setTheme = useCallback((next: Theme) => {
@@ -52,15 +57,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     applyTheme(next);
   }, []);
 
-  const cycleTheme = useCallback(() => {
-    const order: Theme[] = ["light", "dark", "night"];
-    const index = order.indexOf(theme);
-    const next = order[(index + 1) % order.length];
-    setTheme(next);
-  }, [theme, setTheme]);
-
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, cycleTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme }}>
       {children}
     </ThemeContext.Provider>
   );
