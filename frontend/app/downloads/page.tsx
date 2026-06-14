@@ -23,9 +23,10 @@ export default function DownloadsPage() {
 
   async function handleDownload(jobId: string, format: ExportFormat) {
     setDownloadingId(jobId);
+    showToast("Download started", "success");
     try {
       await download.mutateAsync({ jobId, format });
-      showToast("Download started", "success");
+      showToast("Download successfully", "success");
     } catch (err) {
       const message =
         err instanceof ApiClientError

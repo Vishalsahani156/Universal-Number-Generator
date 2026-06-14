@@ -21,9 +21,10 @@ export function DownloadButtons({
   const { showToast } = useToast();
 
   async function handleDownload() {
+    showToast("Download started", "success");
     try {
       await download.mutateAsync({ jobId, format });
-      showToast("Download started", "success");
+      showToast("Download successfully", "success");
     } catch (err) {
       const message =
         err instanceof ApiClientError

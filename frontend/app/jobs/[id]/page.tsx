@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useToast } from "@/components/providers/ToastProvider";
@@ -14,14 +13,6 @@ import { useCancelJob } from "@/hooks/useCancelJob";
 import { useJobStatus } from "@/hooks/useJobStatus";
 import { ApiClientError } from "@/lib/api-client";
 
-function usePrevious<T>(value: T): T | undefined {
-  const [prev, setPrev] = useState<T | undefined>(undefined);
-  useEffect(() => {
-    setPrev(value);
-  }, [value]);
-  return prev;
-}
-
 export default function JobDetailPage() {
   const params = useParams();
   const jobId = params.id as string;
@@ -30,13 +21,6 @@ export default function JobDetailPage() {
   const { showToast } = useToast();
 
   const isActive = job?.status === "queued" || job?.status === "processing";
-  const prevStatus = usePrevious(job?.status);
-
-  useEffect(() => {
-    if (prevStatus && prevStatus !== "completed" && job?.status === "completed") {
-      showToast("Job completed! Your file is ready to download.", "success");
-    }
-  }, [job?.status, prevStatus, showToast]);
 
   async function handleCancel() {
     if (!window.confirm("Cancel this job?")) return;
@@ -102,15 +86,13 @@ export default function JobDetailPage() {
         <JobMetadata job={job} />
       </Card>
 
-      {(job.status === "completed" || job.download_ready) && (
-        <Card title="Download">
-          <DownloadButtons
-            jobId={job.job_id}
-            format={job.export_format ?? "csv"}
-            downloadReady={job.download_ready}
-          />
-        </Card>
-      )}
+      <Card title="Download">
+        <DownloadButtons
+          jobId={job.job_id}
+          format={job.export_format ?? "csv"}
+          downloadReady={job.download_ready}
+        />
+      </Card>
 
       {job.status === "failed" && (
         <Link href="/generate">
