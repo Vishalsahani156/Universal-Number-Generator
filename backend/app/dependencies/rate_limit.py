@@ -54,6 +54,9 @@ async def _sliding_window(
 
 async def check_rate_limit(request: Request, session_id: str) -> None:
     settings = get_settings()
+    if settings.app_env == "development":
+        return
+
     redis = await get_redis()
     client_ip = request.client.host if request.client else "unknown"
     ip_key = f"rl:ip:{_hash_ip(client_ip)}"
