@@ -1,5 +1,6 @@
 "use client";
 
+import { useCountries } from "@/hooks/useCountries";
 import { useGenerateStore } from "@/stores/generate-store";
 import { Input } from "@/components/ui/Input";
 import { XLSX_MAX_ROWS } from "@/lib/constants";
@@ -9,6 +10,7 @@ import type { ExportFormat } from "@/types/api";
 
 export function ExportOptionsPanel() {
   const {
+    countryCode,
     quantity,
     columnName,
     includeCountryCode,
@@ -19,6 +21,11 @@ export function ExportOptionsPanel() {
     setIncludeSerial,
     setFormat,
   } = useGenerateStore();
+  const { data: countries } = useCountries();
+
+  const selectedCountry = countries?.find((c) => c.code === countryCode);
+  const dialCode = selectedCountry?.dial_code;
+  const sampleDigits = "9".repeat(selectedCountry?.mobile_rules.length ?? 10);
 
   const xlsxDisabled = quantity > XLSX_MAX_ROWS;
 
@@ -32,15 +39,45 @@ export function ExportOptionsPanel() {
       />
 
       <div className="space-y-3">
-        <label className="flex cursor-pointer items-center gap-3">
+        <label
+          className={cn(
+            "flex items-start gap-3",
+            selectedCountry ? "cursor-pointer" : "cursor-not-allowed opacity-60",
+          )}
+        >
           <input
             type="checkbox"
             checked={includeCountryCode}
+            disabled={!selectedCountry}
             onChange={(e) => setIncludeCountryCode(e.target.checked)}
-            className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+            className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500 disabled:cursor-not-allowed"
           />
-          <span className="text-sm text-slate-700">Include country dial code (+91, etc.)</span>
+          <span className="text-sm text-slate-700">
+            {selectedCountry ? (
+              <>
+                Include{" "}
+                <span className="font-medium text-slate-900">{selectedCountry.name}</span> dial
+                code ({dialCode})
+              </>
+            ) : (
+              "Include country dial code (select a country first)"
+            )}
+          </span>
         </label>
+
+        {includeCountryCode && dialCode && (
+          <p className="ml-7 text-xs text-brand-700">
+            Numbers will be generated as {dialCode}
+            {sampleDigits.slice(0, 4)}… (e.g. {dialCode}
+            {sampleDigits})
+          </p>
+        )}
+
+        {!includeCountryCode && selectedCountry && (
+          <p className="ml-7 text-xs text-slate-500">
+            Unchecked: local number only (e.g. {sampleDigits})
+          </p>
+        )}
 
         <label className="flex cursor-pointer items-center gap-3">
           <input
