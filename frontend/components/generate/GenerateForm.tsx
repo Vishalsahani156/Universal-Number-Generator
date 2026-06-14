@@ -41,7 +41,7 @@ export function GenerateForm() {
   const { showToast } = useToast();
 
   const estSize = estimateFileSizeBytes(quantity, format);
-  const estDuration = estimateDurationSeconds(quantity);
+  const estDuration = estimateDurationSeconds(quantity, format);
 
   useEffect(() => {
     if (format === "xlsx" && quantity > XLSX_MAX_ROWS) {

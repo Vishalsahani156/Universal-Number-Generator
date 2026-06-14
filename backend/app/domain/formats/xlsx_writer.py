@@ -2,9 +2,9 @@ import hashlib
 import os
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
-from openpyxl import Workbook
+import xlsxwriter
 
 from app.config import get_settings
 
@@ -17,7 +17,7 @@ class XlsxWriter:
         final_path: Path,
         column_name: str,
         include_serial: bool,
-        formatter,
+        formatter: Callable[[str], str],
         max_rows: int | None = None,
     ) -> None:
         settings = get_settings()
@@ -26,33 +26,47 @@ class XlsxWriter:
         self._final_path = final_path
         self._formatter = formatter
         self._include_serial = include_serial
-        self._column_name = column_name
-        self._workbook = Workbook(write_only=True)
-        self._sheet = self._workbook.create_sheet("numbers")
-        header = []
+        self._workbook = xlsxwriter.Workbook(
+            str(temp_path),
+            {"constant_memory": True, "strings_to_numbers": False},
+        )
+        self._sheet = self._workbook.add_worksheet("numbers")
+        data_col = 0
         if include_serial:
-            header.append("S.No")
-        header.append(column_name)
-        self._sheet.append(header)
+            self._sheet.write(0, 0, "S.No")
+            data_col = 1
+        self._sheet.write(0, data_col, column_name)
+        self._next_row = 1
         self._serial = 1
         self._row_count = 1
+        self._closed = False
 
     def write_rows(self, rows: list[str], start_serial: int) -> int:
-        self._serial = start_serial
-        for number in rows:
-            if self._row_count >= self._max_rows:
-                raise ValueError(f"XLSX row limit exceeded ({self._max_rows})")
-            row = []
-            if self._include_serial:
-                row.append(self._serial)
-                self._serial += 1
-            row.append(self._formatter(number))
-            self._sheet.append(row)
-            self._row_count += 1
+        if not rows:
+            return start_serial
+
+        if self._row_count + len(rows) > self._max_rows:
+            raise ValueError(f"XLSX row limit exceeded ({self._max_rows})")
+
+        formatted = [self._formatter(number) for number in rows]
+        row_start = self._next_row
+        count = len(rows)
+
+        if self._include_serial:
+            serials = list(range(start_serial, start_serial + count))
+            self._sheet.write_column(row_start, 0, serials)
+            self._sheet.write_column(row_start, 1, formatted)
+            self._serial = start_serial + count
+        else:
+            self._sheet.write_column(row_start, 0, formatted)
+
+        self._next_row += count
+        self._row_count += count
         return self._serial
 
     def finalize(self) -> dict[str, Any]:
-        self._workbook.save(self._temp_path)
+        self._workbook.close()
+        self._closed = True
         os.replace(self._temp_path, self._final_path)
         sha256 = hashlib.sha256()
         with self._final_path.open("rb") as f:
@@ -67,5 +81,11 @@ class XlsxWriter:
         }
 
     def cleanup(self) -> None:
+        if not self._closed:
+            try:
+                self._workbook.close()
+            except Exception:
+                pass
+            self._closed = True
         if self._temp_path.exists():
             self._temp_path.unlink()

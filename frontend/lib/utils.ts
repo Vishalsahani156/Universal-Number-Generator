@@ -67,8 +67,12 @@ export function estimateFileSizeBytes(quantity: number, format: "csv" | "xlsx"):
   return quantity * bytesPerRow;
 }
 
-export function estimateDurationSeconds(quantity: number): number {
-  return Math.max(1, Math.round((quantity / 2_000_000) * 60));
+export function estimateDurationSeconds(
+  quantity: number,
+  format: "csv" | "xlsx" = "csv",
+): number {
+  const rowsPerMinute = format === "xlsx" ? 1_500_000 : 2_000_000;
+  return Math.max(1, Math.round((quantity / rowsPerMinute) * 60));
 }
 
 export function formatDate(iso: string): string {

@@ -121,16 +121,18 @@ class JobService:
             total=total,
         )
 
-    def estimate_duration(self, quantity: int) -> int:
-        # ~2M numbers/minute after bulk-write optimizations
-        return max(1, int((quantity / 2_000_000) * 60))
+    def estimate_duration(self, quantity: int, export_format: str = "csv") -> int:
+        rows_per_minute = 1_500_000 if export_format == "xlsx" else 2_000_000
+        return max(1, int((quantity / rows_per_minute) * 60))
 
     def _to_create_response(self, job: dict[str, Any]) -> JobCreateResponse:
         settings = get_settings()
         return JobCreateResponse(
             job_id=job["_id"],
             status=job["status"],
-            estimated_duration_seconds=self.estimate_duration(job["quantity"]),
+            estimated_duration_seconds=self.estimate_duration(
+                job["quantity"], job.get("export_format", "csv")
+            ),
             poll_url=f"{settings.api_prefix}/jobs/{job['_id']}/status",
         )
 
