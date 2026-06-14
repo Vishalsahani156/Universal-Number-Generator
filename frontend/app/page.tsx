@@ -36,7 +36,7 @@ export default function DashboardPage() {
         <Link href="/generate" className="mt-6 inline-block">
           <Button
             size="lg"
-            className="bg-white text-brand-700 hover:bg-brand-50"
+            className="!bg-black !text-white hover:!bg-slate-800 border-0 focus-visible:ring-slate-500"
           >
             Start generating
           </Button>
