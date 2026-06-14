@@ -25,7 +25,7 @@ export function Header() {
             <p className="text-sm font-semibold text-slate-900">
               Phone Number Generator
             </p>
-            <p className="text-xs text-slate-500">30 countries · 5M–20M scale</p>
+            <p className="text-xs text-slate-500">30 countries · 1 to 1 cr scale</p>
           </div>
         </Link>
 

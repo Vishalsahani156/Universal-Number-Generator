@@ -9,11 +9,33 @@ export function formatNumber(value: number): string {
 }
 
 export function formatCompact(value: number): string {
+  if (value >= 10_000_000 && value % 10_000_000 === 0) {
+    return `${value / 10_000_000} cr`;
+  }
+  if (value >= 100_000 && value % 100_000 === 0) {
+    return `${value / 100_000} lakh`;
+  }
   if (value >= 1_000_000) {
     const millions = value / 1_000_000;
     return `${millions % 1 === 0 ? millions : millions.toFixed(1)}M`;
   }
   return formatNumber(value);
+}
+
+/** Parse quantity input: plain numbers, commas, lakh/lac, cr/crore. */
+export function parseQuantityInput(raw: string): number | null {
+  const normalized = raw.trim().toLowerCase().replace(/,/g, "").replace(/\s+/g, " ");
+  if (!normalized) return null;
+
+  const crMatch = normalized.match(/^(\d+(?:\.\d+)?)\s*(?:cr|crore|crores)$/);
+  if (crMatch) return Math.round(parseFloat(crMatch[1]) * 10_000_000);
+
+  const lakhMatch = normalized.match(/^(\d+(?:\.\d+)?)\s*(?:l|lakh|lakhs|lac|lacs)$/);
+  if (lakhMatch) return Math.round(parseFloat(lakhMatch[1]) * 100_000);
+
+  const num = Number(normalized);
+  if (!Number.isFinite(num) || !Number.isInteger(num)) return null;
+  return num;
 }
 
 export function formatDuration(seconds: number): string {

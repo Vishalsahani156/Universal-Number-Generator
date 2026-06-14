@@ -24,6 +24,13 @@ export function CountrySelector() {
     );
   }, [countries, search]);
 
+  function selectCountry(code: string) {
+    const country = countries?.find((c) => c.code === code);
+    if (!country) return;
+    setCountryCode(country.code);
+    applyCountryDefaults(country.default_export);
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -40,8 +47,38 @@ export function CountrySelector() {
     );
   }
 
+  if (!countries?.length) {
+    return (
+      <p className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        No countries loaded. Seed the database:{" "}
+        <code className="text-xs">PYTHONPATH=backend python backend/scripts/seed_countries.py</code>
+      </p>
+    );
+  }
+
   return (
     <div className="space-y-4">
+      <div>
+        <label htmlFor="country-select" className="mb-1.5 block text-sm font-medium text-slate-700">
+          Select country
+        </label>
+        <select
+          id="country-select"
+          value={countryCode ?? ""}
+          onChange={(e) => selectCountry(e.target.value)}
+          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+        >
+          <option value="" disabled>
+            Choose a country...
+          </option>
+          {countries.map((country) => (
+            <option key={country.code} value={country.code}>
+              {country.name} ({country.dial_code})
+            </option>
+          ))}
+        </select>
+      </div>
+
       <Input
         label="Search country"
         placeholder="India, IN, +91..."
@@ -54,10 +91,7 @@ export function CountrySelector() {
           <button
             key={country.code}
             type="button"
-            onClick={() => {
-              setCountryCode(country.code);
-              applyCountryDefaults(country.default_export);
-            }}
+            onClick={() => selectCountry(country.code)}
             className={cn(
               "flex items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors",
               countryCode === country.code
@@ -82,6 +116,16 @@ export function CountrySelector() {
 
       {filtered.length === 0 && (
         <p className="text-center text-sm text-slate-500">No countries match your search.</p>
+      )}
+
+      {countryCode && (
+        <p className="rounded-lg bg-brand-50 px-4 py-2 text-sm text-brand-800">
+          Selected:{" "}
+          <span className="font-medium">
+            {countries.find((c) => c.code === countryCode)?.name}
+          </span>{" "}
+          — numbers will be generated for this country.
+        </p>
       )}
     </div>
   );

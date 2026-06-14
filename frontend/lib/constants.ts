@@ -1,7 +1,7 @@
-export const MIN_QUANTITY = 5_000_000;
-export const MAX_QUANTITY = 20_000_000;
+export const MIN_QUANTITY = 1;
+export const MAX_QUANTITY = 10_000_000; // 1 crore
 export const XLSX_MAX_ROWS = 1_048_576;
-export const LARGE_JOB_THRESHOLD = 10_000_000;
+export const LARGE_JOB_THRESHOLD = 100_000;
 export const POLL_INTERVAL_MS = 2000;
 export const HISTORY_PAGE_SIZE = 20;
 

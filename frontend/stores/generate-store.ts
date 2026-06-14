@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import type { ExportFormat, GenerationMode } from "@/types/api";
-import { MIN_QUANTITY } from "@/lib/constants";
 
 interface GenerateState {
   countryCode: string | null;
@@ -27,7 +26,7 @@ interface GenerateState {
 
 const initialState = {
   countryCode: null as string | null,
-  quantity: MIN_QUANTITY,
+  quantity: 1,
   mode: "random" as GenerationMode,
   columnName: "mobile_number",
   includeCountryCode: false,

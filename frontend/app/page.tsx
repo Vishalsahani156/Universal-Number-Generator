@@ -8,6 +8,7 @@ import { JobTable } from "@/components/jobs/JobTable";
 import { useHistory } from "@/hooks/useHistory";
 import { useCountries } from "@/hooks/useCountries";
 import { formatCompact } from "@/lib/utils";
+import { MAX_QUANTITY, MIN_QUANTITY } from "@/lib/constants";
 
 export default function DashboardPage() {
   const { data: history, isLoading } = useHistory(0);
@@ -66,7 +67,7 @@ export default function DashboardPage() {
           <div>
             <h2 className="text-lg font-semibold text-slate-900">Recent jobs</h2>
             <p className="text-sm text-slate-500">
-              Scale: {formatCompact(5_000_000)} – {formatCompact(20_000_000)} per job
+              Scale: {formatCompact(MIN_QUANTITY)} – {formatCompact(MAX_QUANTITY)} per job
             </p>
           </div>
           <Link href="/history">

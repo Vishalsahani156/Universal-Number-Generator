@@ -13,6 +13,8 @@ import { useGenerateStore } from "@/stores/generate-store";
 import {
   COLUMN_NAME_REGEX,
   LARGE_JOB_THRESHOLD,
+  MAX_QUANTITY,
+  MIN_QUANTITY,
   XLSX_MAX_ROWS,
 } from "@/lib/constants";
 import {
@@ -49,6 +51,9 @@ export function GenerateForm() {
 
   function validate(): string | null {
     if (!countryCode) return "Please select a country";
+    if (quantity < MIN_QUANTITY || quantity > MAX_QUANTITY) {
+      return `Quantity must be between ${formatNumber(MIN_QUANTITY)} and ${formatNumber(MAX_QUANTITY)}`;
+    }
     if (!COLUMN_NAME_REGEX.test(columnName.trim())) {
       return "Column name must be 1–50 chars (letters, numbers, spaces, underscores)";
     }
