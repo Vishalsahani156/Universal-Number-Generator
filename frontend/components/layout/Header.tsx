@@ -27,7 +27,7 @@ export function Header() {
               Phone Number Generator
             </p>
             <p className="hidden text-xs text-slate-500 dark:text-slate-400 night:text-slate-500 xs:block sm:block">
-              30 countries · min 1, no max limit
+              30 countries · no max limit
             </p>
           </div>
         </Link>
