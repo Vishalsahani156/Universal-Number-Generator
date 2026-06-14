@@ -40,6 +40,7 @@ class XlsxWriter:
         self._next_row = 1
         self._serial = 1
         self._row_count = 1
+        self._data_row_count = 0
         self._closed = False
 
     def write_rows(self, rows: list[str], start_serial: int) -> int:
@@ -49,7 +50,13 @@ class XlsxWriter:
         if self._row_count + len(rows) > self._max_rows:
             raise ValueError(f"XLSX row limit exceeded ({self._max_rows})")
 
-        formatted = [self._formatter(number) for number in rows]
+        formatted = []
+        for number in rows:
+            value = self._formatter(number)
+            if not value:
+                raise ValueError("Formatter returned an empty phone number")
+            formatted.append(value)
+
         row_start = self._next_row
         count = len(rows)
 
@@ -67,6 +74,7 @@ class XlsxWriter:
 
         self._next_row += count
         self._row_count += count
+        self._data_row_count += count
         return self._serial
 
     def finalize(self) -> dict[str, Any]:
@@ -83,6 +91,7 @@ class XlsxWriter:
             "size_bytes": stat.st_size,
             "sha256": sha256.hexdigest(),
             "created_at": datetime.now(timezone.utc),
+            "row_count": self._data_row_count,
         }
 
     def cleanup(self) -> None:

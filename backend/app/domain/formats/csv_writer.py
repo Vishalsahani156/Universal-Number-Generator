@@ -1,6 +1,7 @@
 import csv
 import hashlib
 import os
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Protocol
 
@@ -25,15 +26,17 @@ class CsvWriter:
         self._final_path = final_path
         self._formatter = formatter
         self._include_serial = include_serial
+        self._row_count = 0
         self._file = temp_path.open(
             "w",
             newline="",
-            encoding="utf-8",
+            encoding="utf-8-sig",
             buffering=1024 * 1024,
         )
         self._writer = csv.writer(
             self._file,
-            quoting=csv.QUOTE_NONNUMERIC,
+            quoting=csv.QUOTE_ALL,
+            lineterminator="\n",
         )
         header = []
         if include_serial:
@@ -42,12 +45,19 @@ class CsvWriter:
         self._writer.writerow(header)
         self._serial = 1
 
+    def _format_cell_value(self, number: str) -> str:
+        value = self._formatter(number)
+        if not value:
+            raise ValueError("Formatter returned an empty phone number")
+        # Leading tab prevents spreadsheet apps from coercing values to numbers.
+        return f"\t{value}"
+
     def write_rows(self, rows: list[str], start_serial: int) -> int:
         if not rows:
             return start_serial
 
         self._serial = start_serial
-        formatted = [self._formatter(number) for number in rows]
+        formatted = [self._format_cell_value(number) for number in rows]
 
         if self._include_serial:
             data = [
@@ -58,7 +68,9 @@ class CsvWriter:
             self._writer.writerows(data)
         else:
             self._writer.writerows([[value] for value in formatted])
+            self._serial = start_serial + len(rows)
 
+        self._row_count += len(rows)
         return self._serial
 
     def finalize(self) -> dict[str, Any]:
@@ -69,13 +81,12 @@ class CsvWriter:
             for chunk in iter(lambda: f.read(1024 * 1024), b""):
                 sha256.update(chunk)
         stat = self._final_path.stat()
-        from datetime import datetime, timezone
-
         return {
             "path": str(self._final_path),
             "size_bytes": stat.st_size,
             "sha256": sha256.hexdigest(),
             "created_at": datetime.now(timezone.utc),
+            "row_count": self._row_count,
         }
 
     def cleanup(self) -> None:

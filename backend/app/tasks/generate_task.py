@@ -5,7 +5,13 @@ from app.config import get_settings
 from app.database import get_sync_db
 from app.domain.formats.csv_writer import CsvWriter
 from app.domain.formats.xlsx_writer import XlsxWriter
+from app.domain.generators.batch_collector import BatchCollector
 from app.domain.generators.registry import get_generator
+from app.domain.validators.number_validator import (
+    ExportVerificationError,
+    verify_csv_export,
+    verify_xlsx_export,
+)
 from app.repositories.jobs_repo import JobsRepository
 from app.tasks.celery_app import celery_app
 
@@ -52,9 +58,10 @@ def run_generate_job(job_id: str) -> None:
     final_path = job_dir / f"output.{export_format}"
 
     generator = get_generator(job["country_code"])
-    formatter = lambda n: generator.format_number(  # noqa: E731
-        n, export_options.get("include_country_code", False)
-    )
+    include_country_code = export_options.get("include_country_code", False)
+    include_serial = export_options.get("include_serial", False)
+    formatter = lambda n: generator.format_number(n, include_country_code)  # noqa: E731
+    collector = BatchCollector(generator, mode)
 
     writer = None
     try:
@@ -63,7 +70,7 @@ def run_generate_job(job_id: str) -> None:
                 temp_path=temp_path,
                 final_path=final_path,
                 column_name=export_options["column_name"],
-                include_serial=export_options.get("include_serial", False),
+                include_serial=include_serial,
                 formatter=formatter,
             )
         else:
@@ -71,15 +78,13 @@ def run_generate_job(job_id: str) -> None:
                 temp_path=temp_path,
                 final_path=final_path,
                 column_name=export_options["column_name"],
-                include_serial=export_options.get("include_serial", False),
+                include_serial=include_serial,
                 formatter=formatter,
             )
 
         generated = 0
-        seq_offset = 0
         serial = 1
         start_time = datetime.now(timezone.utc)
-
         progress_interval = max(1, total_chunks // 20)
 
         for chunk_index in range(total_chunks):
@@ -91,17 +96,14 @@ def run_generate_job(job_id: str) -> None:
 
             remaining = quantity - generated
             batch_size = min(chunk_size, remaining)
-            batch = generator.generate_batch(
-                batch_size,
-                seq_offset if mode == "sequential" else 0,
-                mode,
-            )
-            if not batch:
-                raise RuntimeError("Number generator returned an empty batch")
+            batch = collector.collect(batch_size)
+            if len(batch) != batch_size:
+                raise RuntimeError(
+                    f"Batch collector returned {len(batch):,} numbers, expected {batch_size:,}"
+                )
+
             serial = writer.write_rows(batch, serial)
             generated += len(batch)
-            if mode == "sequential":
-                seq_offset += batch_size
 
             if (
                 chunk_index % progress_interval == 0
@@ -122,13 +124,43 @@ def run_generate_job(job_id: str) -> None:
                     eta,
                 )
 
+        if generated != quantity:
+            raise RuntimeError(
+                f"Generated {generated:,} numbers but expected {quantity:,}"
+            )
+        if collector.collected_count != quantity:
+            raise RuntimeError(
+                f"Collector tracked {collector.collected_count:,} unique numbers, "
+                f"expected {quantity:,}"
+            )
+
         file_meta = writer.finalize()
+        if file_meta.get("row_count") != quantity:
+            raise RuntimeError(
+                f"Writer recorded {file_meta.get('row_count')} rows, expected {quantity:,}"
+            )
+
+        verification_kwargs = {
+            "expected_count": quantity,
+            "include_serial": include_serial,
+            "length": generator.length,
+            "dial_code": generator.dial_code,
+            "valid_prefixes": generator.valid_prefixes,
+            "include_country_code": include_country_code,
+        }
+        if export_format == "csv":
+            verify_csv_export(final_path, **verification_kwargs)
+        else:
+            verify_xlsx_export(final_path, **verification_kwargs)
+
         jobs_repo.mark_completed_sync(job_id, export_format, file_meta)
 
-    except Exception as exc:
+    except (ExportVerificationError, Exception) as exc:
         if writer:
             writer.cleanup()
         if temp_path.exists():
             temp_path.unlink()
+        if final_path.exists():
+            final_path.unlink()
         jobs_repo.mark_failed_sync(job_id, str(exc))
         raise
