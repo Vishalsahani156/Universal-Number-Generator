@@ -1,9 +1,8 @@
 from contextlib import asynccontextmanager
 
-import orjson
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import ORJSONResponse
+from fastapi.responses import JSONResponse
 
 from app.config import get_settings
 from app.database import connect_mongodb, disconnect_mongodb
@@ -27,7 +26,6 @@ def create_app() -> FastAPI:
         title="Phone Number Generator API",
         version="1.0.0",
         lifespan=lifespan,
-        default_response_class=ORJSONResponse,
     )
 
     app.add_middleware(
@@ -47,7 +45,7 @@ def create_app() -> FastAPI:
     @app.exception_handler(HTTPException)
     async def http_exception_handler(_request: Request, exc: HTTPException):
         headers = getattr(exc, "headers", None) or {}
-        return ORJSONResponse(
+        return JSONResponse(
             status_code=exc.status_code,
             content={"detail": exc.detail},
             headers=headers,
