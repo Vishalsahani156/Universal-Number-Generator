@@ -21,6 +21,10 @@ def enqueue_generate_task(job_id: str) -> str:
 
 @celery_app.task(name="app.tasks.generate_task.generate_numbers", bind=True)
 def generate_numbers(self, job_id: str) -> None:
+    run_generate_job(job_id)
+
+
+def run_generate_job(job_id: str) -> None:
     settings = get_settings()
     db = get_sync_db()
     jobs_repo = JobsRepository(db)

@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from typing import Any
+import asyncio
 
 from app.config import get_settings
 from app.domain.generators.registry import get_generator, validate_country_code
@@ -85,10 +86,14 @@ class JobService:
         )
         await self._jobs_repo.insert_job_async(job)
 
-        from app.tasks.generate_task import enqueue_generate_task
+        from app.tasks.generate_task import enqueue_generate_task, run_generate_job
 
-        task_id = enqueue_generate_task(job["_id"])
-        await self._jobs_repo.update_celery_task_id_async(job["_id"], task_id)
+        if self._settings.app_env == "development":
+            asyncio.create_task(asyncio.to_thread(run_generate_job, job["_id"]))
+            await self._jobs_repo.update_celery_task_id_async(job["_id"], "inline-dev")
+        else:
+            task_id = enqueue_generate_task(job["_id"])
+            await self._jobs_repo.update_celery_task_id_async(job["_id"], task_id)
 
         return self._to_create_response(job)
 
@@ -116,7 +121,7 @@ class JobService:
         )
 
     def estimate_duration(self, quantity: int) -> int:
-        return max(60, int((quantity / 500_000) * 60))
+        return max(1, int((quantity / 500_000) * 60))
 
     def _to_create_response(self, job: dict[str, Any]) -> JobCreateResponse:
         settings = get_settings()
