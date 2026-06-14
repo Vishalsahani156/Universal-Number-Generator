@@ -31,7 +31,10 @@ class CsvWriter:
             encoding="utf-8",
             buffering=1024 * 1024,
         )
-        self._writer = csv.writer(self._file)
+        self._writer = csv.writer(
+            self._file,
+            quoting=csv.QUOTE_NONNUMERIC,
+        )
         header = []
         if include_serial:
             header.append("S.No")

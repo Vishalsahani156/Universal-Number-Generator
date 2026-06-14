@@ -31,6 +31,12 @@ class GenericCountryGenerator:
         return self._random_batch(batch_size)
 
     def format_number(self, number: str, include_country_code: bool) -> str:
+        if len(number) != self._length:
+            raise ValueError(
+                f"Generated number must be {self._length} digits, got {number!r}"
+            )
+        if not self._has_valid_prefix(number):
+            raise ValueError(f"Generated number has invalid prefix: {number!r}")
         if include_country_code:
             return f"{self._dial_code}{number}"
         return number
@@ -38,11 +44,11 @@ class GenericCountryGenerator:
     def _sequential_batch(self, batch_size: int, offset: int) -> list[str]:
         numbers: list[str] = []
         current = self._seq_start + offset
-        end = min(current + batch_size, self._seq_end + 1)
-        for value in range(current, end):
-            num = str(value).zfill(self._length)
+        while len(numbers) < batch_size and current <= self._seq_end:
+            num = str(current).zfill(self._length)
             if self._has_valid_prefix(num):
                 numbers.append(num)
+            current += 1
         return numbers
 
     def _random_batch(self, batch_size: int) -> list[str]:

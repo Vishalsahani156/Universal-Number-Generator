@@ -76,6 +76,7 @@ def run_generate_job(job_id: str) -> None:
             )
 
         generated = 0
+        seq_offset = 0
         serial = 1
         start_time = datetime.now(timezone.utc)
 
@@ -90,9 +91,17 @@ def run_generate_job(job_id: str) -> None:
 
             remaining = quantity - generated
             batch_size = min(chunk_size, remaining)
-            batch = generator.generate_batch(batch_size, generated, mode)
+            batch = generator.generate_batch(
+                batch_size,
+                seq_offset if mode == "sequential" else 0,
+                mode,
+            )
+            if not batch:
+                raise RuntimeError("Number generator returned an empty batch")
             serial = writer.write_rows(batch, serial)
             generated += len(batch)
+            if mode == "sequential":
+                seq_offset += batch_size
 
             if (
                 chunk_index % progress_interval == 0

@@ -31,6 +31,7 @@ class XlsxWriter:
             {"constant_memory": True, "strings_to_numbers": False},
         )
         self._sheet = self._workbook.add_worksheet("numbers")
+        self._text_format = self._workbook.add_format({"num_format": "@"})
         data_col = 0
         if include_serial:
             self._sheet.write(0, 0, "S.No")
@@ -52,13 +53,17 @@ class XlsxWriter:
         row_start = self._next_row
         count = len(rows)
 
+        # write_column breaks for column > 0 in constant_memory mode — write row-by-row
         if self._include_serial:
-            serials = list(range(start_serial, start_serial + count))
-            self._sheet.write_column(row_start, 0, serials)
-            self._sheet.write_column(row_start, 1, formatted)
+            for index, value in enumerate(formatted):
+                row = row_start + index
+                serial = start_serial + index
+                self._sheet.write_number(row, 0, serial)
+                self._sheet.write_string(row, 1, value, self._text_format)
             self._serial = start_serial + count
         else:
-            self._sheet.write_column(row_start, 0, formatted)
+            for index, value in enumerate(formatted):
+                self._sheet.write_string(row_start + index, 0, value, self._text_format)
 
         self._next_row += count
         self._row_count += count
