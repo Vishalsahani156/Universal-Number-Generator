@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
 
 from app.database import get_async_db
+from app.utils.datetime_utils import ensure_utc
 from app.dependencies.rate_limit import check_rate_limit
 from app.dependencies.session import get_optional_client_request_id, get_session_id
 from app.repositories.countries_repo import CountriesRepository
@@ -126,7 +127,9 @@ async def download_file(
     if not job_doc:
         raise HTTPException(status_code=404, detail="Job not found")
 
-    if job_doc["status"] == "expired" or job_doc["expires_at"] < datetime.now(timezone.utc):
+    if job_doc["status"] == "expired" or ensure_utc(job_doc["expires_at"]) < datetime.now(
+        timezone.utc
+    ):
         raise HTTPException(status_code=410, detail="File has expired")
 
     if not download_service.verify_download_token(job_id, session_id, x_download_token):

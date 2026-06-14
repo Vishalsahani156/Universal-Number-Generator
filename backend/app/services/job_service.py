@@ -3,6 +3,7 @@ from typing import Any
 import asyncio
 
 from app.config import get_settings
+from app.utils.datetime_utils import ensure_utc
 from app.domain.generators.registry import get_generator, validate_country_code
 from app.repositories.countries_repo import CountriesRepository
 from app.repositories.jobs_repo import JobsRepository, build_job_document
@@ -145,10 +146,12 @@ class JobService:
             )
 
         export_opts = job.get("export_options")
+        expires_at = job.get("expires_at")
         download_ready = (
             job["status"] == "completed"
             and bool(job.get("files", {}).get(job.get("export_format")))
-            and datetime.now(timezone.utc) < job["expires_at"]
+            and expires_at is not None
+            and datetime.now(timezone.utc) < ensure_utc(expires_at)
         )
 
         return JobStatusResponse(
@@ -162,17 +165,19 @@ class JobService:
             export_options=ExportOptions(**export_opts) if export_opts else None,
             download_ready=download_ready,
             error=job.get("error"),
-            created_at=job.get("created_at"),
-            completed_at=job.get("completed_at"),
-            expires_at=job.get("expires_at"),
+            created_at=ensure_utc(job["created_at"]) if job.get("created_at") else None,
+            completed_at=ensure_utc(job["completed_at"]) if job.get("completed_at") else None,
+            expires_at=ensure_utc(expires_at) if expires_at else None,
         )
 
     def _to_history_item(self, job: dict[str, Any]) -> HistoryItem:
         now = datetime.now(timezone.utc)
+        expires_at = job.get("expires_at")
         download_available = (
             job["status"] == "completed"
             and bool(job.get("files", {}).get(job.get("export_format")))
-            and now < job["expires_at"]
+            and expires_at is not None
+            and now < ensure_utc(expires_at)
         )
         return HistoryItem(
             job_id=job["_id"],
@@ -180,7 +185,7 @@ class JobService:
             quantity=job["quantity"],
             status=job["status"],
             export_format=job["export_format"],
-            created_at=job["created_at"],
+            created_at=ensure_utc(job["created_at"]),
             download_available=download_available,
-            expires_at=job["expires_at"],
+            expires_at=ensure_utc(expires_at),
         )
