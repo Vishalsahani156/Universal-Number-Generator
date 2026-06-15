@@ -36,6 +36,7 @@ def main() -> None:
         [("client_request_id", ASCENDING)],
         unique=True,
         sparse=True,
+        name="client_request_id_1",
     )
 
     print(f"Seeded {len(countries)} countries into {settings.mongodb_db}")

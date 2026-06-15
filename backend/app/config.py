@@ -4,7 +4,20 @@ from pathlib import Path
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+def _resolve_project_root() -> Path:
+    """Resolve repo root for local dev (Python/) and Docker (/app/)."""
+    app_root = Path(__file__).resolve().parent.parent  # backend/ or /app/
+    repo_root = app_root.parent
+
+    if (repo_root / "shared" / "country-metadata" / "countries.json").exists():
+        return repo_root
+    if (app_root / "shared" / "country-metadata" / "countries.json").exists():
+        return app_root
+    return repo_root
+
+
+PROJECT_ROOT = _resolve_project_root()
 DEFAULT_EXPORTS_DIR = PROJECT_ROOT / "data" / "exports"
 
 

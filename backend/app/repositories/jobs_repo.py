@@ -179,10 +179,9 @@ def build_job_document(
 ) -> dict[str, Any]:
     now = datetime.now(timezone.utc)
     job_id = str(uuid4())
-    return {
+    doc: dict[str, Any] = {
         "_id": job_id,
         "session_id": session_id,
-        "client_request_id": client_request_id,
         "country_code": country_code.upper(),
         "quantity": quantity,
         "generation_mode": generation_mode,
@@ -197,10 +196,14 @@ def build_job_document(
         },
         "files": {},
         "error": None,
-        "ip_hash": ip_hash,
         "created_at": now,
         "started_at": None,
         "completed_at": None,
         "expires_at": now + timedelta(hours=retention_hours),
         "celery_task_id": None,
     }
+    if client_request_id:
+        doc["client_request_id"] = client_request_id
+    if ip_hash:
+        doc["ip_hash"] = ip_hash
+    return doc
