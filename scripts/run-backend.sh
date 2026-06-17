@@ -32,9 +32,9 @@ Local dev (recommended — open 3 terminals):
   Terminal 4: bash scripts/run-backend.sh beat   # optional
 
 URLs:
-  API:    http://localhost:8000
-  Docs:   http://localhost:8000/docs
-  Health: http://localhost:8000/api/v1/health
+  API:    http://localhost:8100
+  Docs:   http://localhost:8100/docs
+  Health: http://localhost:8100/api/v1/health
 EOF
 }
 

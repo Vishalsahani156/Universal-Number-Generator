@@ -8,6 +8,7 @@ from app.config import get_settings
 from app.database import connect_mongodb, disconnect_mongodb
 from app.dependencies.rate_limit import close_redis
 from app.routers import countries, health, jobs
+from app.services.country_seed import ensure_countries_seeded_sync
 
 
 @asynccontextmanager
@@ -15,6 +16,11 @@ async def lifespan(_app: FastAPI):
     settings = get_settings()
     settings.exports_dir.mkdir(parents=True, exist_ok=True)
     await connect_mongodb()
+    try:
+        ensure_countries_seeded_sync()
+    except Exception:
+        # Countries endpoint still works via countries.json fallback.
+        pass
     yield
     await disconnect_mongodb()
     await close_redis()

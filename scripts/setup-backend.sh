@@ -34,6 +34,13 @@ pip install -q -r "$BACKEND/requirements.txt"
 
 mkdir -p "$ROOT/data/exports"
 
+# Frontend proxy must target Phone Generator API on 8100 (not 8000 — often used by other apps)
+cat > "$ROOT/frontend/.env.local" <<'EOF'
+NEXT_PUBLIC_API_URL=/api/v1
+BACKEND_URL=http://localhost:8100
+EOF
+echo "Wrote frontend/.env.local (BACKEND_URL=http://localhost:8100)"
+
 # Start deps if docker available
 if command -v docker &>/dev/null; then
   bash "$ROOT/scripts/start-deps.sh"

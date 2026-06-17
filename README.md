@@ -51,9 +51,9 @@ bash scripts/run-backend.sh docker
 
 | Service | URL |
 |---|---|
-| API | http://localhost:8000 |
-| Swagger Docs | http://localhost:8000/docs |
-| Health Check | http://localhost:8000/api/v1/health |
+| API | http://localhost:8100 |
+| Swagger Docs | http://localhost:8100/docs |
+| Health Check | http://localhost:8100/api/v1/health |
 
 ### All scripts
 

@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     app_env: str = "development"
     secret_key: str = "change-me-to-a-long-random-string"
     api_prefix: str = "/api/v1"
+    api_port: int = 8100
 
     mongodb_uri: str = "mongodb://localhost:27017"
     mongodb_db: str = "phone_generator"

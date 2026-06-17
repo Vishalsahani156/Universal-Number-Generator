@@ -42,6 +42,7 @@ async def health_check():
 
     healthy = all(checks.values())
     return {
+        "service": "phone_generator",
         "status": "healthy" if healthy else "degraded",
         "checks": checks,
         "errors": errors,
