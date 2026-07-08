@@ -1,5 +1,7 @@
 # Universal Phone Number Generator
 
+🌐 **Live Demo:** [universal-number-generator-x965.vercel.app](https://universal-number-generator-x965.vercel.app/)
+
 Large-scale web application for generating format-valid mobile phone numbers for 30 countries (5M–20M per job) with CSV/XLSX export.
 
 ## Documentation
