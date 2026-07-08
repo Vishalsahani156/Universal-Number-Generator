@@ -10,8 +10,14 @@ export type GenerationMode = "sequential" | "random";
 
 export type ExportFormat = "csv" | "xlsx";
 
+export interface ExportColumn {
+  header: string;
+  static_value: string;
+}
+
 export interface ExportOptions {
   column_name: string;
+  columns?: ExportColumn[];
   include_country_code: boolean;
   include_serial: boolean;
 }

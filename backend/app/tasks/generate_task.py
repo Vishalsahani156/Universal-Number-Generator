@@ -63,6 +63,10 @@ def run_generate_job(job_id: str) -> None:
     formatter = lambda n: generator.format_number(n, include_country_code)  # noqa: E731
     collector = BatchCollector(generator, mode)
 
+    columns = export_options.get("columns") or [
+        {"header": export_options["column_name"], "static_value": ""}
+    ]
+
     writer = None
     try:
         if export_format == "csv":
@@ -70,6 +74,7 @@ def run_generate_job(job_id: str) -> None:
                 temp_path=temp_path,
                 final_path=final_path,
                 column_name=export_options["column_name"],
+                columns=columns,
                 include_serial=include_serial,
                 formatter=formatter,
             )
@@ -78,6 +83,7 @@ def run_generate_job(job_id: str) -> None:
                 temp_path=temp_path,
                 final_path=final_path,
                 column_name=export_options["column_name"],
+                columns=columns,
                 include_serial=include_serial,
                 formatter=formatter,
             )

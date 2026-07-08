@@ -2,7 +2,7 @@ import re
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 COLUMN_NAME_PATTERN = re.compile(r"^[a-zA-Z0-9_ ]{1,50}$")
 
@@ -11,8 +11,32 @@ GenerationMode = Literal["sequential", "random"]
 ExportFormat = Literal["csv", "xlsx"]
 
 
+class ExportColumn(BaseModel):
+    header: str = Field(..., min_length=1, max_length=50)
+    static_value: str = Field(default="", max_length=200)
+
+    @field_validator("header", mode="before")
+    @classmethod
+    def default_header(cls, value: str) -> str:
+        if isinstance(value, str):
+            value = value.strip()
+        if not value:
+            return "number"
+        return value
+
+    @field_validator("header")
+    @classmethod
+    def validate_header(cls, value: str) -> str:
+        if not COLUMN_NAME_PATTERN.match(value):
+            raise ValueError(
+                "header must be 1-50 chars (letters, numbers, spaces, underscores)"
+            )
+        return value
+
+
 class ExportOptions(BaseModel):
     column_name: str = Field(..., min_length=1, max_length=50)
+    columns: list[ExportColumn] = Field(default_factory=list)
     include_country_code: bool = False
     include_serial: bool = False
 
@@ -33,6 +57,12 @@ class ExportOptions(BaseModel):
                 "column_name must be 1-50 chars (letters, numbers, spaces, underscores)"
             )
         return value
+
+    @model_validator(mode="after")
+    def ensure_columns(self):
+        if not self.columns:
+            self.columns = [ExportColumn(header=self.column_name, static_value="")]
+        return self
 
 
 class JobCreateRequest(BaseModel):

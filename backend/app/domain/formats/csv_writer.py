@@ -1,9 +1,10 @@
 import csv
 import hashlib
 import os
+from collections.abc import Callable
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable, Protocol
+from typing import Any, Protocol
 
 
 class FileWriter(Protocol):
@@ -19,6 +20,7 @@ class CsvWriter:
         temp_path: Path,
         final_path: Path,
         column_name: str,
+        columns: list[dict[str, str]] | None = None,
         include_serial: bool,
         formatter: Callable[[str], str],
     ) -> None:
@@ -26,6 +28,7 @@ class CsvWriter:
         self._final_path = final_path
         self._formatter = formatter
         self._include_serial = include_serial
+        self._columns = columns or [{"header": column_name, "static_value": ""}]
         self._row_count = 0
         self._file = temp_path.open(
             "w",
@@ -41,7 +44,8 @@ class CsvWriter:
         header = []
         if include_serial:
             header.append("S.No")
-        header.append(column_name)
+        for col in self._columns:
+            header.append(col["header"])
         self._writer.writerow(header)
         self._serial = 1
 
@@ -59,16 +63,19 @@ class CsvWriter:
         self._serial = start_serial
         formatted = [self._format_cell_value(number) for number in rows]
 
-        if self._include_serial:
-            data = [
-                [start_serial + index, value]
-                for index, value in enumerate(formatted)
-            ]
-            self._serial = start_serial + len(rows)
-            self._writer.writerows(data)
-        else:
-            self._writer.writerows([[value] for value in formatted])
-            self._serial = start_serial + len(rows)
+        data = []
+        for index, number_value in enumerate(formatted):
+            row = []
+            if self._include_serial:
+                row.append(start_serial + index)
+            for col_index, col in enumerate(self._columns):
+                if col_index == 0:
+                    row.append(number_value)
+                else:
+                    row.append(col.get("static_value", "") or "")
+            data.append(row)
+        self._serial = start_serial + len(rows)
+        self._writer.writerows(data)
 
         self._row_count += len(rows)
         return self._serial

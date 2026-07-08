@@ -6,17 +6,19 @@ import { Input } from "@/components/ui/Input";
 import { DEFAULT_COLUMN_NAME, XLSX_MAX_ROWS } from "@/lib/constants";
 import { formatNumber, resolveColumnName } from "@/lib/utils";
 import { cn } from "@/lib/utils";
-import type { ExportFormat } from "@/types/api";
+import type { ExportColumn, ExportFormat } from "@/types/api";
 
 export function ExportOptionsPanel() {
   const {
     countryCode,
     quantity,
-    columnName,
+    columns,
     includeCountryCode,
     includeSerial,
     format,
-    setColumnName,
+    addColumn,
+    removeColumn,
+    updateColumn,
     setIncludeCountryCode,
     setIncludeSerial,
     setFormat,
@@ -31,26 +33,71 @@ export function ExportOptionsPanel() {
 
   return (
     <div className="space-y-4">
-      <Input
-        label="Column header name"
-        placeholder={DEFAULT_COLUMN_NAME}
-        value={columnName}
-        onChange={(e) => setColumnName(e.target.value)}
-        hint={`Leave empty for default "${DEFAULT_COLUMN_NAME}", or type your own (max 50 chars)`}
-      />
-
-      {!columnName.trim() && (
-        <p className="text-xs text-slate-500 dark:text-slate-400 night:text-slate-500">
-          CSV header will be: <span className="font-medium">{DEFAULT_COLUMN_NAME}</span>
+      <div>
+        <p className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300 night:text-slate-400">
+          Column headers
         </p>
-      )}
+        <div className="space-y-3">
+          {columns.map((col: ExportColumn, index: number) => (
+            <div key={index} className="flex items-start gap-2">
+              <div className="flex-1 space-y-2">
+                <Input
+                  label={index === 0 ? "Phone number column" : `Column ${index + 1}`}
+                  placeholder={index === 0 ? DEFAULT_COLUMN_NAME : "e.g. Name, Email"}
+                  value={col.header}
+                  onChange={(e) => updateColumn(index, "header", e.target.value)}
+                  hint={
+                    index === 0
+                      ? `Leave empty for default "${DEFAULT_COLUMN_NAME}"`
+                      : "Enter column header name"
+                  }
+                />
+                {index > 0 && (
+                  <Input
+                    label="Static value"
+                    placeholder="Value repeated for each row"
+                    value={col.static_value}
+                    onChange={(e) => updateColumn(index, "static_value", e.target.value)}
+                    hint="Optional: fill with a fixed value for every row"
+                  />
+                )}
+              </div>
+              {columns.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeColumn(index)}
+                  className="mt-6 rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/30 night:hover:bg-red-950/20"
+                  title="Remove column"
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={addColumn}
+          className="mt-2 flex items-center gap-1 text-xs font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300 night:text-brand-500 night:hover:text-brand-400"
+        >
+          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Add column
+        </button>
+      </div>
 
-      {columnName.trim() && (
-        <p className="text-xs text-slate-500 dark:text-slate-400 night:text-slate-500">
-          CSV header will be:{" "}
-          <span className="font-medium">{resolveColumnName(columnName)}</span>
+      <div className="rounded-md bg-slate-50 p-3 dark:bg-slate-800/50 night:bg-slate-900/50">
+        <p className="text-xs font-medium text-slate-500 dark:text-slate-400 night:text-slate-500">
+          Preview headers:{" "}
+          <span className="font-mono text-slate-700 dark:text-slate-300 night:text-slate-400">
+            {includeSerial && "S.No, "}
+            {columns.map((col, i) => resolveColumnName(col.header) + (i < columns.length - 1 ? ", " : "")).join("")}
+          </span>
         </p>
-      )}
+      </div>
 
       <div className="space-y-3">
         <label

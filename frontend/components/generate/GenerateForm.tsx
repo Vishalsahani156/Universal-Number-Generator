@@ -12,6 +12,7 @@ import { useCreateJob } from "@/hooks/useCreateJob";
 import { useGenerateStore } from "@/stores/generate-store";
 import {
   COLUMN_NAME_REGEX,
+  DEFAULT_COLUMN_NAME,
   LARGE_JOB_THRESHOLD,
   MIN_QUANTITY,
   XLSX_MAX_ROWS,
@@ -31,7 +32,7 @@ export function GenerateForm() {
     countryCode,
     quantity,
     mode,
-    columnName,
+    columns,
     includeCountryCode,
     includeSerial,
     format,
@@ -54,9 +55,14 @@ export function GenerateForm() {
     if (quantity < MIN_QUANTITY) {
       return `Quantity must be at least ${formatNumber(MIN_QUANTITY)}`;
     }
-    const resolvedColumnName = resolveColumnName(columnName);
-    if (!COLUMN_NAME_REGEX.test(resolvedColumnName)) {
-      return "Column name must be 1–50 chars (letters, numbers, spaces, underscores)";
+    if (columns.length === 0) {
+      return "At least one column is required";
+    }
+    for (const col of columns) {
+      const resolved = resolveColumnName(col.header);
+      if (!COLUMN_NAME_REGEX.test(resolved)) {
+        return `Column "${resolved}" must be 1–50 chars (letters, numbers, spaces, underscores)`;
+      }
     }
     if (format === "xlsx" && quantity > XLSX_MAX_ROWS) {
       return `XLSX supports max ${formatNumber(XLSX_MAX_ROWS)} rows`;
@@ -85,7 +91,11 @@ export function GenerateForm() {
         generation_mode: mode,
         export_format: format,
         export_options: {
-          column_name: resolveColumnName(columnName),
+          column_name: columns.length > 0 ? resolveColumnName(columns[0].header) : DEFAULT_COLUMN_NAME,
+          columns: columns.map((col) => ({
+            header: resolveColumnName(col.header),
+            static_value: col.static_value || "",
+          })),
           include_country_code: includeCountryCode,
           include_serial: includeSerial,
         },

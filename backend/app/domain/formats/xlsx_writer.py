@@ -1,8 +1,9 @@
 import hashlib
 import os
+from collections.abc import Callable
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import xlsxwriter
 
@@ -16,6 +17,7 @@ class XlsxWriter:
         temp_path: Path,
         final_path: Path,
         column_name: str,
+        columns: list[dict[str, str]] | None = None,
         include_serial: bool,
         formatter: Callable[[str], str],
         max_rows: int | None = None,
@@ -26,17 +28,20 @@ class XlsxWriter:
         self._final_path = final_path
         self._formatter = formatter
         self._include_serial = include_serial
+        self._columns = columns or [{"header": column_name, "static_value": ""}]
         self._workbook = xlsxwriter.Workbook(
             str(temp_path),
             {"constant_memory": True, "strings_to_numbers": False},
         )
         self._sheet = self._workbook.add_worksheet("numbers")
         self._text_format = self._workbook.add_format({"num_format": "@"})
-        data_col = 0
+        col_cursor = 0
         if include_serial:
             self._sheet.write(0, 0, "S.No")
-            data_col = 1
-        self._sheet.write(0, data_col, column_name)
+            col_cursor = 1
+        for col in self._columns:
+            self._sheet.write(0, col_cursor, col["header"])
+            col_cursor += 1
         self._next_row = 1
         self._serial = 1
         self._row_count = 1
@@ -60,21 +65,24 @@ class XlsxWriter:
         row_start = self._next_row
         count = len(rows)
 
-        # write_column breaks for column > 0 in constant_memory mode — write row-by-row
-        if self._include_serial:
-            for index, value in enumerate(formatted):
-                row = row_start + index
-                serial = start_serial + index
-                self._sheet.write_number(row, 0, serial)
-                self._sheet.write_string(row, 1, value, self._text_format)
-            self._serial = start_serial + count
-        else:
-            for index, value in enumerate(formatted):
-                self._sheet.write_string(row_start + index, 0, value, self._text_format)
+        for index, number_value in enumerate(formatted):
+            row = row_start + index
+            col_cursor = 0
+            if self._include_serial:
+                self._sheet.write_number(row, 0, start_serial + index)
+                col_cursor = 1
+            for col_index, col in enumerate(self._columns):
+                if col_index == 0:
+                    self._sheet.write_string(row, col_cursor, number_value, self._text_format)
+                else:
+                    val = col.get("static_value", "") or ""
+                    self._sheet.write_string(row, col_cursor, val, self._text_format)
+                col_cursor += 1
 
         self._next_row += count
         self._row_count += count
         self._data_row_count += count
+        self._serial = start_serial + count
         return self._serial
 
     def finalize(self) -> dict[str, Any]:
