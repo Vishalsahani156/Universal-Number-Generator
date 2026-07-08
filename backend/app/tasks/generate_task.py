@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from app.config import get_settings
 from app.database import get_sync_db
 from app.domain.formats.csv_writer import CsvWriter
+from app.domain.formats.pdf_writer import PdfWriter
 from app.domain.formats.xlsx_writer import XlsxWriter
 from app.domain.generators.batch_collector import BatchCollector
 from app.domain.generators.registry import get_generator
@@ -63,14 +64,34 @@ def run_generate_job(job_id: str) -> None:
     formatter = lambda n: generator.format_number(n, include_country_code)  # noqa: E731
     collector = BatchCollector(generator, mode)
 
-    columns = export_options.get("columns") or [
+    raw_columns = export_options.get("columns") or [
         {"header": export_options["column_name"], "static_value": ""}
     ]
+    raw_extra = export_options.get("extra_fields") or []
+    columns = list(raw_columns)
+    for ef in raw_extra:
+        label = (ef.get("label") or ef.get("key") or "").strip()
+        value = (ef.get("value") or "").strip()
+        if not label and not value:
+            continue
+        columns.append({
+            "header": label or "field",
+            "static_value": value or "",
+        })
 
     writer = None
     try:
         if export_format == "csv":
             writer = CsvWriter(
+                temp_path=temp_path,
+                final_path=final_path,
+                column_name=export_options["column_name"],
+                columns=columns,
+                include_serial=include_serial,
+                formatter=formatter,
+            )
+        elif export_format == "pdf":
+            writer = PdfWriter(
                 temp_path=temp_path,
                 final_path=final_path,
                 column_name=export_options["column_name"],
@@ -156,7 +177,7 @@ def run_generate_job(job_id: str) -> None:
         }
         if export_format == "csv":
             verify_csv_export(final_path, **verification_kwargs)
-        else:
+        elif export_format == "xlsx":
             verify_xlsx_export(final_path, **verification_kwargs)
 
         jobs_repo.mark_completed_sync(job_id, export_format, file_meta)

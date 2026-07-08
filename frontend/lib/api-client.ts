@@ -102,7 +102,7 @@ export const apiClient = {
       method: "POST",
     }),
 
-  async downloadFile(jobId: string, format: "csv" | "xlsx"): Promise<void> {
+  async downloadFile(jobId: string, format: "csv" | "xlsx" | "pdf"): Promise<void> {
     const { token } = await this.getDownloadToken(jobId);
     const response = await fetch(
       `${API_URL}/jobs/${jobId}/download?format=${format}`,

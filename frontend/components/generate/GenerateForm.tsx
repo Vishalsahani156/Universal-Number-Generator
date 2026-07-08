@@ -33,6 +33,7 @@ export function GenerateForm() {
     quantity,
     mode,
     columns,
+    extraFields,
     includeCountryCode,
     includeSerial,
     format,
@@ -96,6 +97,14 @@ export function GenerateForm() {
             header: resolveColumnName(col.header),
             static_value: col.static_value || "",
           })),
+          extra_fields: extraFields
+            .filter((ef) => ef.label.trim() !== "")
+            .map((ef) => ({
+              key: ef.key || ef.label.trim().toLowerCase().replace(/\s+/g, "_"),
+              label: ef.label.trim(),
+              value: ef.value.trim(),
+              generate_different: ef.generate_different,
+            })),
           include_country_code: includeCountryCode,
           include_serial: includeSerial,
         },

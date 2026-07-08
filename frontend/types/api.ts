@@ -8,16 +8,24 @@ export type JobStatus =
 
 export type GenerationMode = "sequential" | "random";
 
-export type ExportFormat = "csv" | "xlsx";
+export type ExportFormat = "csv" | "xlsx" | "pdf";
 
 export interface ExportColumn {
   header: string;
   static_value: string;
 }
 
+export interface ExtraField {
+  key: string;
+  label: string;
+  value: string;
+  generate_different: boolean;
+}
+
 export interface ExportOptions {
   column_name: string;
   columns?: ExportColumn[];
+  extra_fields?: ExtraField[];
   include_country_code: boolean;
   include_serial: boolean;
 }

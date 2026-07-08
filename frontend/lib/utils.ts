@@ -62,16 +62,16 @@ export function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
-export function estimateFileSizeBytes(quantity: number, format: "csv" | "xlsx"): number {
-  const bytesPerRow = format === "csv" ? 14 : 18;
+export function estimateFileSizeBytes(quantity: number, format: "csv" | "xlsx" | "pdf"): number {
+  const bytesPerRow = format === "csv" ? 14 : format === "pdf" ? 60 : 18;
   return quantity * bytesPerRow;
 }
 
 export function estimateDurationSeconds(
   quantity: number,
-  format: "csv" | "xlsx" = "csv",
+  format: "csv" | "xlsx" | "pdf" = "csv",
 ): number {
-  const rowsPerMinute = format === "xlsx" ? 1_500_000 : 2_000_000;
+  const rowsPerMinute = format === "xlsx" ? 1_500_000 : format === "pdf" ? 500_000 : 2_000_000;
   return Math.max(1, Math.round((quantity / rowsPerMinute) * 60));
 }
 

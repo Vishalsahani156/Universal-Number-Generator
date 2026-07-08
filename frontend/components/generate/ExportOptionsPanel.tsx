@@ -6,19 +6,24 @@ import { Input } from "@/components/ui/Input";
 import { DEFAULT_COLUMN_NAME, XLSX_MAX_ROWS } from "@/lib/constants";
 import { formatNumber, resolveColumnName } from "@/lib/utils";
 import { cn } from "@/lib/utils";
-import type { ExportColumn, ExportFormat } from "@/types/api";
+import type { ExportColumn, ExportFormat, ExtraField } from "@/types/api";
 
 export function ExportOptionsPanel() {
   const {
     countryCode,
     quantity,
     columns,
+    extraFields,
     includeCountryCode,
     includeSerial,
     format,
     addColumn,
     removeColumn,
     updateColumn,
+    addExtraField,
+    removeExtraField,
+    updateExtraField,
+    toggleExtraFieldGenerateDifferent,
     setIncludeCountryCode,
     setIncludeSerial,
     setFormat,
@@ -30,6 +35,12 @@ export function ExportOptionsPanel() {
   const sampleDigits = "9".repeat(selectedCountry?.mobile_rules.length ?? 10);
 
   const xlsxDisabled = quantity > XLSX_MAX_ROWS;
+
+  const allHeaders = [
+    ...(includeSerial ? ["S.No"] : []),
+    ...columns.map((c) => resolveColumnName(c.header)),
+    ...extraFields.map((ef) => ef.label || ef.key),
+  ];
 
   return (
     <div className="space-y-4">
@@ -89,12 +100,74 @@ export function ExportOptionsPanel() {
         </button>
       </div>
 
+      <hr className="border-slate-200 dark:border-slate-700 night:border-slate-800" />
+
+      <div>
+        <p className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300 night:text-slate-400">
+          Extra fields <span className="text-xs font-normal text-slate-400">(optional)</span>
+        </p>
+        <div className="space-y-3">
+          {extraFields.map((ef: ExtraField, index: number) => (
+            <div key={index} className="flex items-start gap-2">
+              <div className="flex-1 space-y-2">
+                <Input
+                  label="Label"
+                  placeholder="e.g. Email, Name, Company"
+                  value={ef.label}
+                  onChange={(e) => updateExtraField(index, "label", e.target.value)}
+                  hint="Column header name in export"
+                />
+                {!ef.generate_different && (
+                  <Input
+                    label="Value"
+                    placeholder="Value for every row"
+                    value={ef.value}
+                    onChange={(e) => updateExtraField(index, "value", e.target.value)}
+                    hint={`Key: ${ef.key || "auto-generated"}`}
+                  />
+                )}
+                <label className="flex cursor-pointer items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={ef.generate_different}
+                    onChange={() => toggleExtraFieldGenerateDifferent(index)}
+                    className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-800 night:border-slate-700 night:bg-slate-900"
+                  />
+                  <span className="text-xs text-slate-600 dark:text-slate-400 night:text-slate-500">
+                    Generate different values for each row
+                  </span>
+                </label>
+              </div>
+              <button
+                type="button"
+                onClick={() => removeExtraField(index)}
+                className="mt-6 rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/30 night:hover:bg-red-950/20"
+                title="Remove field"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={addExtraField}
+          className="mt-2 flex items-center gap-1 text-xs font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300 night:text-brand-500 night:hover:text-brand-400"
+        >
+          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Add extra field
+        </button>
+      </div>
+
       <div className="rounded-md bg-slate-50 p-3 dark:bg-slate-800/50 night:bg-slate-900/50">
         <p className="text-xs font-medium text-slate-500 dark:text-slate-400 night:text-slate-500">
           Preview headers:{" "}
           <span className="font-mono text-slate-700 dark:text-slate-300 night:text-slate-400">
-            {includeSerial && "S.No, "}
-            {columns.map((col, i) => resolveColumnName(col.header) + (i < columns.length - 1 ? ", " : "")).join("")}
+            {allHeaders.join(", ")}
           </span>
         </p>
       </div>
@@ -154,7 +227,7 @@ export function ExportOptionsPanel() {
       <div className="space-y-2">
         <p className="text-sm font-medium text-slate-700 dark:text-slate-300 night:text-slate-400">Export format</p>
         <div className="grid grid-cols-2 gap-2">
-          {(["csv", "xlsx"] as ExportFormat[]).map((f) => {
+          {(["csv", "xlsx", "pdf"] as ExportFormat[]).map((f) => {
             const disabled = f === "xlsx" && xlsxDisabled;
             return (
               <button

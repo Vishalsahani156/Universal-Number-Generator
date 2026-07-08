@@ -8,7 +8,7 @@ COLUMN_NAME_PATTERN = re.compile(r"^[a-zA-Z0-9_ ]{1,50}$")
 
 JobStatus = Literal["queued", "processing", "completed", "failed", "cancelled", "expired"]
 GenerationMode = Literal["sequential", "random"]
-ExportFormat = Literal["csv", "xlsx"]
+ExportFormat = Literal["csv", "xlsx", "pdf"]
 
 
 class ExportColumn(BaseModel):
@@ -34,9 +34,23 @@ class ExportColumn(BaseModel):
         return value
 
 
+class ExtraField(BaseModel):
+    key: str = Field(default="", max_length=50)
+    label: str = Field(default="", max_length=100)
+    value: str = Field(default="", max_length=500)
+
+    @field_validator("label", "value", mode="before")
+    @classmethod
+    def strip_fields(cls, value: str) -> str:
+        if isinstance(value, str):
+            return value.strip()
+        return value
+
+
 class ExportOptions(BaseModel):
     column_name: str = Field(..., min_length=1, max_length=50)
     columns: list[ExportColumn] = Field(default_factory=list)
+    extra_fields: list[ExtraField] = Field(default_factory=list)
     include_country_code: bool = False
     include_serial: bool = False
 
@@ -59,9 +73,32 @@ class ExportOptions(BaseModel):
         return value
 
     @model_validator(mode="after")
-    def ensure_columns(self):
+    def normalize_and_ensure(self):
         if not self.columns:
             self.columns = [ExportColumn(header=self.column_name, static_value="")]
+        seen_keys: set[str] = set()
+        normalized: list[ExtraField] = []
+        for ef in self.extra_fields:
+            label = ef.label.strip()
+            value = ef.value.strip()
+            if not label and not value:
+                continue
+            key = ef.key.strip() or label.lower().replace(
+                " ", "_"
+            ).replace("-", "_")
+            key = re.sub(r"[^a-zA-Z0-9_]", "", key)
+            if not key:
+                key = f"field_{len(normalized)}"
+            if key in seen_keys:
+                suffix = 2
+                while f"{key}_{suffix}" in seen_keys:
+                    suffix += 1
+                key = f"{key}_{suffix}"
+            seen_keys.add(key)
+            normalized.append(
+                ExtraField(key=key, label=label or key.capitalize(), value=value)
+            )
+        self.extra_fields = normalized
         return self
 
 

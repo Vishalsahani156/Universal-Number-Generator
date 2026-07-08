@@ -115,7 +115,7 @@ async def create_download_token(
 @router.get("/jobs/{job_id}/download")
 async def download_file(
     job_id: str,
-    format: str = Query(..., pattern="^(csv|xlsx)$"),
+    format: str = Query(..., pattern="^(csv|xlsx|pdf)$"),
     session_id: str = Depends(get_session_id),
     x_download_token: str = Header(..., alias="X-Download-Token"),
     job_service: JobService = Depends(_get_job_service),
@@ -145,6 +145,7 @@ async def download_file(
     filename = f"numbers_{job_id}.{format}"
     media_type = (
         "text/csv" if format == "csv"
+        else "application/pdf" if format == "pdf"
         else "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
 

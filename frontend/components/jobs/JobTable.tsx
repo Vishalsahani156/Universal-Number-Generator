@@ -4,12 +4,12 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { formatDate, formatNumber } from "@/lib/utils";
-import type { HistoryItem } from "@/types/api";
+import type { ExportFormat, HistoryItem } from "@/types/api";
 
 interface JobTableProps {
   items: HistoryItem[];
   showDownload?: boolean;
-  onDownload?: (jobId: string, format: "csv" | "xlsx") => void;
+  onDownload?: (jobId: string, format: ExportFormat) => void;
   downloadingId?: string | null;
 }
 
@@ -21,7 +21,7 @@ function JobActions({
 }: {
   item: HistoryItem;
   showDownload: boolean;
-  onDownload?: (jobId: string, format: "csv" | "xlsx") => void;
+  onDownload?: (jobId: string, format: ExportFormat) => void;
   downloadingId?: string | null;
 }) {
   return (
