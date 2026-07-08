@@ -80,4 +80,10 @@ docker compose -f docker/docker-compose.yml up --build
 ├── docker/         # Docker Compose + Nginx
 ├── docs/           # Architecture documentation
 └── data/exports/   # Generated files (gitignored)
+
+## Deployment
+
+| Service | URL |
+|---|---|
+| Frontend (Vercel) | https://universal-number-generator-x965.vercel.app/
 ```
