@@ -61,6 +61,9 @@ export default function JobDetailPage() {
 
   return (
     <div className="space-y-6">
+      <Link href="/history">
+        <Button variant="ghost" size="sm" className="mb-2">&larr; Back</Button>
+      </Link>
       <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
         <div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 night:text-slate-200 sm:text-2xl">Job details</h1>
