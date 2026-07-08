@@ -56,7 +56,12 @@ class CsvWriter:
         # Leading tab prevents spreadsheet apps from coercing values to numbers.
         return f"\t{value}"
 
-    def write_rows(self, rows: list[str], start_serial: int) -> int:
+    def write_rows(
+        self,
+        rows: list[str],
+        start_serial: int,
+        extra_values: list[list[str]] | None = None,
+    ) -> int:
         if not rows:
             return start_serial
 
@@ -68,10 +73,12 @@ class CsvWriter:
             row = []
             if self._include_serial:
                 row.append(start_serial + index)
-            for col_index, col in enumerate(self._columns):
-                if col_index == 0:
-                    row.append(number_value)
-                else:
+            # Column 0: phone number
+            row.append(number_value)
+            if extra_values:
+                row.extend(extra_values[index])
+            else:
+                for col in self._columns[1:]:
                     row.append(col.get("static_value", "") or "")
             data.append(row)
         self._serial = start_serial + len(rows)

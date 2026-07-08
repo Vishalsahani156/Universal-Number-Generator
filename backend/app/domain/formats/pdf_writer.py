@@ -63,7 +63,12 @@ class PdfWriter:
             raise ValueError("Formatter returned an empty phone number")
         return value
 
-    def write_rows(self, rows: list[str], start_serial: int) -> int:
+    def write_rows(
+        self,
+        rows: list[str],
+        start_serial: int,
+        extra_values: list[list[str]] | None = None,
+    ) -> int:
         if not rows:
             return start_serial
 
@@ -83,10 +88,11 @@ class PdfWriter:
             row_data = []
             if self._include_serial:
                 row_data.append(str(start_serial + index))
-            for col_index, col in enumerate(self._columns):
-                if col_index == 0:
-                    row_data.append(number_value)
-                else:
+            row_data.append(number_value)
+            if extra_values:
+                row_data.extend(extra_values[index])
+            else:
+                for col in self._columns[1:]:
                     row_data.append(col.get("static_value", "") or "")
 
             max_lines = 1

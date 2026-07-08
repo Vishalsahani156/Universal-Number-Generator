@@ -7,6 +7,7 @@ from app.domain.formats.csv_writer import CsvWriter
 from app.domain.formats.pdf_writer import PdfWriter
 from app.domain.formats.xlsx_writer import XlsxWriter
 from app.domain.generators.batch_collector import BatchCollector
+from app.domain.generators.dummy_generator import generate_dummy_value
 from app.domain.generators.registry import get_generator
 from app.domain.validators.number_validator import (
     ExportVerificationError,
@@ -69,15 +70,18 @@ def run_generate_job(job_id: str) -> None:
     ]
     raw_extra = export_options.get("extra_fields") or []
     columns = list(raw_columns)
+    dynamic_extra_indices: list[int] = []
     for ef in raw_extra:
         label = (ef.get("label") or ef.get("key") or "").strip()
         value = (ef.get("value") or "").strip()
-        if not label and not value:
+        if not label and not value and not ef.get("generate_different"):
             continue
         columns.append({
             "header": label or "field",
             "static_value": value or "",
         })
+        if ef.get("generate_different"):
+            dynamic_extra_indices.append(len(columns) - 1)
 
     writer = None
     try:
@@ -129,7 +133,19 @@ def run_generate_job(job_id: str) -> None:
                     f"Batch collector returned {len(batch):,} numbers, expected {batch_size:,}"
                 )
 
-            serial = writer.write_rows(batch, serial)
+            batch_extra_values = []
+            for i in range(len(batch)):
+                row_values = []
+                for ef in raw_extra:
+                    if ef.get("generate_different"):
+                        row_values.append(
+                            generate_dummy_value(ef.get("label", ""), serial + i)
+                        )
+                    else:
+                        row_values.append(ef.get("value", ""))
+                batch_extra_values.append(row_values)
+
+            serial = writer.write_rows(batch, serial, batch_extra_values)
             generated += len(batch)
 
             if (

@@ -38,6 +38,7 @@ class ExtraField(BaseModel):
     key: str = Field(default="", max_length=50)
     label: str = Field(default="", max_length=100)
     value: str = Field(default="", max_length=500)
+    generate_different: bool = False
 
     @field_validator("label", "value", mode="before")
     @classmethod

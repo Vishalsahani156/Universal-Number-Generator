@@ -48,7 +48,12 @@ class XlsxWriter:
         self._data_row_count = 0
         self._closed = False
 
-    def write_rows(self, rows: list[str], start_serial: int) -> int:
+    def write_rows(
+        self,
+        rows: list[str],
+        start_serial: int,
+        extra_values: list[list[str]] | None = None,
+    ) -> int:
         if not rows:
             return start_serial
 
@@ -71,13 +76,18 @@ class XlsxWriter:
             if self._include_serial:
                 self._sheet.write_number(row, 0, start_serial + index)
                 col_cursor = 1
-            for col_index, col in enumerate(self._columns):
-                if col_index == 0:
-                    self._sheet.write_string(row, col_cursor, number_value, self._text_format)
-                else:
+            # Column 0: phone number
+            self._sheet.write_string(row, col_cursor, number_value, self._text_format)
+            col_cursor += 1
+            if extra_values:
+                for val in extra_values[index]:
+                    self._sheet.write_string(row, col_cursor, val, self._text_format)
+                    col_cursor += 1
+            else:
+                for col in self._columns[1:]:
                     val = col.get("static_value", "") or ""
                     self._sheet.write_string(row, col_cursor, val, self._text_format)
-                col_cursor += 1
+                    col_cursor += 1
 
         self._next_row += count
         self._row_count += count
