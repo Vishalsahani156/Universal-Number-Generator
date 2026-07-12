@@ -1,0 +1,59 @@
+# Render Blueprint for the Universal Number Generator backend.
+# The frontend is deployed separately on Vercel.
+#
+# One web service runs the FastAPI API + the Celery worker + beat scheduler
+# together, because they share the /data/exports disk (Render disks cannot be
+# mounted to more than one service). A managed Redis instance backs Celery and
+# rate limiting. MongoDB is not offered by Render — point MONGODB_URI at a
+# MongoDB Atlas cluster (set it in the dashboard; it is sync:false below).
+
+services:
+  - type: web
+    name: ung-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: starter          # a persistent disk requires Starter or higher
+    region: oregon
+    healthCheckPath: /api/v1/health
+    disk:
+      name: exports
+      mountPath: /data/exports
+      sizeGB: 1
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: EXPORTS_DIR
+        value: /data/exports
+      - key: MONGODB_DB
+        value: phone_generator
+      - key: SECRET_KEY
+        generateValue: true
+      # Set these in the Render dashboard:
+      - key: MONGODB_URI        # e.g. mongodb+srv://user:pass@cluster.mongodb.net
+        sync: false
+      - key: CORS_ORIGINS       # e.g. https://your-frontend.vercel.app
+        sync: false
+      # Wired automatically from the Redis instance below:
+      - key: REDIS_URL
+        fromService:
+          name: ung-redis
+          type: redis
+          property: connectionString
+      - key: CELERY_BROKER_URL
+        fromService:
+          name: ung-redis
+          type: redis
+          property: connectionString
+      - key: CELERY_RESULT_BACKEND
+        fromService:
+          name: ung-redis
+          type: redis
+          property: connectionString
+
+  - type: redis
+    name: ung-redis
+    plan: free
+    region: oregon
+    maxmemoryPolicy: noeviction
+    ipAllowList: []          # only reachable from services in this blueprint
